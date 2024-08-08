@@ -37,7 +37,6 @@ private:
     Ui::add_action *ui;
     QSqlDatabase db;
     QSqlQuery *query;
-    MainWindow *window_main;
 };
 
 #endif // ADD_ACTION_H

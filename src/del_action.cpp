@@ -1,4 +1,4 @@
-#include "del_action.h"
+#include "include/del_action.h"
 #include "ui_del_action.h"
 
 Del_action::Del_action(QWidget *parent) :

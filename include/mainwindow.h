@@ -5,9 +5,9 @@
 #include <QStackedWidget>
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include "add_action.h"
-#include "qcustomplot.h"
-#include "del_action.h"
+#include "include/add_action.h"
+#include "include/qcustomplot.h"
+#include "include/del_action.h"
 
 class add_action;
 class Del_action;

@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QTableView>
 #include <QSqlTableModel>
-#include "mainwindow.h"
+#include "include/mainwindow.h"
 
 class MainWindow;
 
