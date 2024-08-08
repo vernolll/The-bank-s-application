@@ -6,6 +6,7 @@
 #include <QSqlTableModel>
 #include "mainwindow.h"
 
+class MainWindow;
 
 namespace Ui {
 class Del_action;
@@ -20,13 +21,21 @@ public:
     void draw_table();
     ~Del_action();
 
+signals:
+    void calc();
+
 private slots:
     void on_pushButton_delete_clicked();
+
+
+    void on_tableView_clicked(const QModelIndex &index);
+
 
 
 private:
     Ui::Del_action *ui;
     QSqlTableModel *model;
+    int row;
 };
 
 #endif // DEL_ACTION_H

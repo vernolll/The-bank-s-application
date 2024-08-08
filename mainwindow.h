@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-
+    bool add_Database();
     ~MainWindow();
 
 public slots:
@@ -33,6 +33,8 @@ public slots:
 
     void draw_graph(QVector<double> money);
 
+    void calculations();
+
 private slots:
     void on_pushButton_del_clicked();
 
@@ -41,6 +43,8 @@ private:
     QStackedWidget *stackedWidget;
     add_action *window_add;
     Del_action *window_del;
+    QSqlQuery *query;
+    QSqlDatabase db;
 
 };
 #endif // MAINWINDOW_H

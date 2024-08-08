@@ -13,23 +13,12 @@ add_action::add_action(QWidget *parent) :
 add_action::~add_action()
 {
     delete ui;
+    delete query;
 }
 
 
-bool add_action::add_Database()
+bool add_action::connect_info()
 {
-    db = QSqlDatabase::addDatabase("QPSQL");
-    db.setDatabaseName("finance");
-    db.setUserName("postgres");
-    db.setPassword("2k0a0r6AS");
-
-    if (!db.open())
-    {
-        qDebug() << "Error: Unable to open database" << db.lastError().text();
-        return false;
-    }
-
-    qDebug() << "Database connected successfully.";
     query = new QSqlQuery(db);
     query->prepare("SELECT Action, Category FROM Categories WHERE action = 'Доходы'");
     query->exec();
@@ -38,7 +27,6 @@ bool add_action::add_Database()
         QString type = query->value(1).toString();
         ui->comboBox_category->addItem(type);
     }
-    delete query;
     return true;
 }
 
@@ -56,7 +44,6 @@ void add_action::on_comboBox_action_currentIndexChanged(const QString &arg1)
         QString type = query->value(1).toString();
         ui->comboBox_category->addItem(type);
     }
-    delete query;
 }
 
 void add_action::on_pushButton_add_clicked()
@@ -76,7 +63,7 @@ void add_action::on_pushButton_add_clicked()
         if (query->exec())
         {
             qDebug() << "Insertion successful!";
-            calculations();
+            emit calc();
             this->close();
 
         } else
@@ -84,41 +71,11 @@ void add_action::on_pushButton_add_clicked()
             qDebug() << "Insertion failed:" << query->lastError().text();
         }
     }
-    delete query;
+    else
+    {
+        QMessageBox::warning(this, "Ошибка", "Заполните поля правильно.");
+    }
+
 }
 
 
-void add_action::calculations()
-{
-    QVector<double> moneyValues;
-    query = new QSqlQuery(db);
-
-    if (db.open())
-    {
-        if(query->exec("SELECT Money, Action FROM Actions"))
-        {
-            while (query->next())
-            {
-                double money = query->value(0).toDouble();
-                QString action = query->value(1).toString(); // Assuming action is stored in column 1
-
-                if (action == "Расходы")
-                {
-                    money *= -1; // Multiply money by -1 for expenses
-                }
-                moneyValues.push_back(money);
-            }
-        }
-    }
-
-    QVector<double> wallet;
-    double balance = 0;
-    for (int i = 0; i < moneyValues.size(); i++)
-    {
-        balance += moneyValues[i];
-        wallet += balance;
-    }
-
-    emit graph(wallet);
-    delete query;
-}

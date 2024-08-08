@@ -117,6 +117,32 @@
        <string>Советы:</string>
       </property>
      </widget>
+     <widget class="QLabel" name="label_balance">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>220</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>190</y>
+        <width>125</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Ваши деньги:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

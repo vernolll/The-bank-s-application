@@ -13,6 +13,7 @@ Del_action::Del_action(QWidget *parent) :
 Del_action::~Del_action()
 {
     delete ui;
+    delete model;
 }
 
 void Del_action::draw_table()
@@ -28,5 +29,13 @@ void Del_action::draw_table()
 
 void Del_action::on_pushButton_delete_clicked()
 {
+    model->removeRow(row);
+    emit calc();
+    this->close();
+}
 
+
+void Del_action::on_tableView_clicked(const QModelIndex &index)
+{
+    row = index.row();
 }

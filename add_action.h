@@ -21,14 +21,11 @@ class add_action : public QDialog
 
 public:
     explicit add_action(QWidget *parent = nullptr);
-    bool add_Database();
-    void calculations();
+    bool connect_info();
     ~add_action();
 
 signals:
-    void window_add();
-
-    void graph(QVector<double> money);
+    void calc();
 
 private slots:
     void on_comboBox_action_currentIndexChanged(const QString &arg1);
@@ -40,6 +37,7 @@ private:
     Ui::add_action *ui;
     QSqlDatabase db;
     QSqlQuery *query;
+    MainWindow *window_main;
 };
 
 #endif // ADD_ACTION_H
