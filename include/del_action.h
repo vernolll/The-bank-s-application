@@ -27,7 +27,10 @@ signals:
 private slots:
     void on_pushButton_delete_clicked();
 
+
     void on_tableView_clicked(const QModelIndex &index);
+
+
 
 private:
     Ui::Del_action *ui;

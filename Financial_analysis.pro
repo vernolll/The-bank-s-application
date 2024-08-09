@@ -16,9 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    income_and_expenses.cpp \
     src/add_action.cpp \
     src/del_action.cpp \
-    src/income_and_expenses.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/qcustomplot.cpp
@@ -26,9 +26,11 @@ SOURCES += \
 HEADERS += \
     include/add_action.h \
     include/del_action.h \
-    include/income_and_expenses.h \
+    include/add_action.h \
+    include/del_action.h \
     include/mainwindow.h \
     include/qcustomplot.h \
+    income_and_expenses.h
 
 FORMS += \
     ui/add_action.ui \

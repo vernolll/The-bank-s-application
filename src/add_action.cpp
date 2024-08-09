@@ -30,7 +30,6 @@ bool add_action::connect_info()
     return true;
 }
 
-
 void add_action::on_comboBox_action_currentIndexChanged(const QString &arg1)
 {
     query = new QSqlQuery(db);
@@ -46,7 +45,6 @@ void add_action::on_comboBox_action_currentIndexChanged(const QString &arg1)
         ui->comboBox_category->addItem(type);
     }
 }
-
 
 void add_action::on_pushButton_add_clicked()
 {
@@ -79,3 +77,5 @@ void add_action::on_pushButton_add_clicked()
     }
 
 }
+
+

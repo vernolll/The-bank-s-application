@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/income_and_expenses.cpp
-#include "include/income_and_expenses.h"
-========
-#include "include/mainwindow.h"
-#include "ui_mainwindow.h"
->>>>>>>> 42155020790d7efa28fe579edf3ecc515f8a5097:src/mainwindow.cpp
+#include "income_and_expenses.h"
 
 income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
@@ -16,12 +11,9 @@ income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
     connect(window_del, SIGNAL(calc()), this, SLOT(calculations()));
 }
 
-
 income_and_expenses::~income_and_expenses()
 {
-    //delete ui;
-    delete window_add;
-    delete window_del;
+    delete ui;
 }
 
 
@@ -62,6 +54,7 @@ void income_and_expenses::on_pushButton_add_clicked()
 void income_and_expenses::draw_graph(QVector<double> money)
 {
     QVector<double> actions;
+
     for(int i = 0; i < money.size(); i++)
     {
         actions.push_back(i);
@@ -90,6 +83,7 @@ void income_and_expenses::on_pushButton_del_clicked()
 void income_and_expenses::calculations()
 {
     QVector<double> moneyValues;
+
     query = new QSqlQuery(db);
 
     if (db.open())
