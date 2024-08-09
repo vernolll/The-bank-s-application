@@ -53,17 +53,20 @@ void add_action::filling_comboBox(const QString &arg1)
 
 void add_action::add_info()
 {
+    QDate date = ui->dateEdit->date();
     double money = ui->lineEdit_money->text().toDouble();
     QString action = ui->comboBox_action->currentText();
     QString category = ui->comboBox_category->currentText();
 
+
     if (money != 0 && action != NULL && category != NULL)
     {
         query = new QSqlQuery(db);
-        query->prepare("INSERT INTO Actions (Action, Category, Money) VALUES (:act, :cat, :mon)");
+        query->prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
         query->bindValue(":act", action);
         query->bindValue(":cat", category);
         query->bindValue(":mon", money);
+        query->bindValue(":day", date);
 
         if (query->exec())
         {

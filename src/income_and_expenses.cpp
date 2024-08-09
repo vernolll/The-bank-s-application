@@ -55,23 +55,37 @@ void income_and_expenses::open_add_action()
 }
 
 
-void income_and_expenses::draw_graph(QVector<double> money)
+void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
 {
-    QVector<double> actions;
-    for(int i = 0; i < money.size(); i++)
-    {
-        actions.push_back(i);
-    }
     ui->Chart->clearGraphs();
     ui->Chart->addGraph();
-    ui->Chart->graph(0)->setData(actions, money);
+    QVector<double> dateIndices;
 
-    qDebug() << money << actions;
+    for (int i = 0; i < date.size(); ++i)
+    {
+        dateIndices.append(i);
+    }
 
-    ui->Chart->xAxis->setLabel("Действия");
-    ui->Chart->yAxis->setLabel("Деньги");
-    ui->Chart->xAxis->setRange(0, money.size() - 1); // Adjust X-axis range
-    ui->Chart->yAxis->setRange(*std::min_element(money.begin(), money.end()), *std::max_element(money.begin(), money.end())); // Adjust Y-axis range
+    ui->Chart->graph(0)->setData(dateIndices, money);
+
+    // Set the tick labels to display dates
+    QVector<QString> labels;
+    for (const QDate &d : date)
+    {
+        labels.append(d.toString("dd/MM/yyyy"));
+    }
+    ui->Chart->xAxis->setAutoTicks(false);
+    ui->Chart->xAxis->setAutoTickLabels(false);
+    ui->Chart->xAxis->setTickVector(dateIndices);
+    ui->Chart->xAxis->setTickVectorLabels(labels);
+
+    // Adjust X-axis range
+    ui->Chart->xAxis->setRange(0, dateIndices.size()-1);
+
+    // Adjust Y-axis range
+    ui->Chart->yAxis->setRange(*std::min_element(money.begin(), money.end()), *std::max_element(money.begin(), money.end()));
+
+    // Redraw the plot
     ui->Chart->replot();
 }
 
@@ -85,23 +99,26 @@ void income_and_expenses::open_del_action()
 
 void income_and_expenses::calculations()
 {
+    QVector<QDate> transactionDates;
     QVector<double> moneyValues;
     query = new QSqlQuery(db);
 
     if (db.open())
     {
-        if(query->exec("SELECT Money, Action FROM Actions"))
+        if(query->exec("SELECT Money, Action, Date FROM Actions"))
         {
             while (query->next())
             {
                 double money = query->value(0).toDouble();
-                QString action = query->value(1).toString(); // Assuming action is stored in column 1
+                QString action = query->value(1).toString();
+                QDate date = query->value(2).toDate();
 
                 if (action == "Расходы")
                 {
                     money *= -1; // Multiply money by -1 for expenses
                 }
                 moneyValues.push_back(money);
+                transactionDates.push_back(date);
             }
         }
     }
@@ -113,13 +130,27 @@ void income_and_expenses::calculations()
 
     QVector<double> wallet;
     double balance = 0;
+    bool is_warning = false;
     for (int i = 0; i < moneyValues.size(); i++)
     {
         balance += moneyValues[i];
         wallet += balance;
+        if (balance <= 1000) // warning if there is not enough money in the account
+        {
+            is_warning = true;
+        }
+    }
+
+    if(is_warning)
+    {
+        ui->label_advice->setText("ВНИМАНИЕ: Вы были близки к кризису. Будьте осторожнее.");
+    }
+    else
+    {
+        ui->label_advice->setText("Советы: хорошо живете.");
     }
 
     ui->label_balance->setNum(balance);
 
-    draw_graph(wallet);
+    draw_graph(wallet, transactionDates);
 }

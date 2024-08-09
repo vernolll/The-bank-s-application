@@ -3,11 +3,11 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QDate>
 #include "ui_mainwindow.h"
 #include "include/add_action.h"
 #include "include/qcustomplot.h"
 #include "include/del_action.h"
-
 
 class add_action;
 class Del_action;
@@ -30,7 +30,7 @@ public:
 public slots:
     void open_inc_exp();
     void open_add_action();
-    void draw_graph(QVector<double> money);
+    void draw_graph(QVector<double> money, QVector<QDate> date);
     void open_del_action();
     void calculations();
 
