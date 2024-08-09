@@ -16,22 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    add_action.cpp \
-    del_action.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    qcustomplot.cpp
+    src/add_action.cpp \
+    src/del_action.cpp \
+    src/income_and_expenses.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/qcustomplot.cpp
 
 HEADERS += \
-    add_action.h \
-    del_action.h \
-    mainwindow.h \
-    qcustomplot.h
+    include/add_action.h \
+    include/del_action.h \
+    include/income_and_expenses.h \
+    include/mainwindow.h \
+    include/qcustomplot.h \
 
 FORMS += \
-    add_action.ui \
-    del_action.ui \
-    mainwindow.ui
+    ui/add_action.ui \
+    ui/del_action.ui \
+    ui/mainwindow.ui
 
 TRANSLATIONS += \
     Financial_analysis_ru_RU.ts
@@ -40,3 +42,6 @@ TRANSLATIONS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc

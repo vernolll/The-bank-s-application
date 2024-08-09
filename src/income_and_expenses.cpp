@@ -1,17 +1,9 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "include/income_and_expenses.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
+    QObject(parent),
+    ui(ui)
 {
-    ui->setupUi(this);
-    setWindowTitle("Мои финансы");
-
-    stackedWidget = ui->stackedWidget;
-
-    ui->stackedWidget->setCurrentWidget(ui->page);
-
     window_add = new add_action();
     window_del = new Del_action();
 
@@ -19,16 +11,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(window_del, SIGNAL(calc()), this, SLOT(calculations()));
 }
 
-MainWindow::~MainWindow()
+
+income_and_expenses::~income_and_expenses()
 {
-    delete ui;
+    //delete ui;
     delete window_add;
-    delete stackedWidget;
     delete window_del;
 }
 
 
-void MainWindow::on_pushButton_3_clicked()
+void income_and_expenses::on_pushButton_3_clicked()
 {
     add_Database();
     ui->stackedWidget->setCurrentWidget(ui->page_expenses_income);
@@ -36,7 +28,8 @@ void MainWindow::on_pushButton_3_clicked()
     calculations();
 }
 
-bool MainWindow::add_Database()
+
+bool income_and_expenses::add_Database()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("finance");
@@ -54,14 +47,14 @@ bool MainWindow::add_Database()
 }
 
 
-void MainWindow::on_pushButton_add_clicked()
+void income_and_expenses::on_pushButton_add_clicked()
 {
     window_add->show();
 
 }
 
 
-void MainWindow::draw_graph(QVector<double> money)
+void income_and_expenses::draw_graph(QVector<double> money)
 {
     QVector<double> actions;
     for(int i = 0; i < money.size(); i++)
@@ -82,13 +75,14 @@ void MainWindow::draw_graph(QVector<double> money)
 }
 
 
-void MainWindow::on_pushButton_del_clicked()
+void income_and_expenses::on_pushButton_del_clicked()
 {
     window_del->show();
     window_del->draw_table();
 }
 
-void MainWindow::calculations()
+
+void income_and_expenses::calculations()
 {
     QVector<double> moneyValues;
     query = new QSqlQuery(db);
@@ -128,4 +122,3 @@ void MainWindow::calculations()
 
     draw_graph(wallet);
 }
-

@@ -3,14 +3,10 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include "add_action.h"
-#include "qcustomplot.h"
-#include "del_action.h"
+#include "include/income_and_expenses.h"
 
-class add_action;
-class Del_action;
+
+class income_and_expenses;
 
 
 QT_BEGIN_NAMESPACE
@@ -23,10 +19,11 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    bool add_Database();
     ~MainWindow();
 
-public slots:
+signals:
+    void on_pushButton_del_clicked();
+
     void on_pushButton_3_clicked();
 
     void on_pushButton_add_clicked();
@@ -35,16 +32,10 @@ public slots:
 
     void calculations();
 
-private slots:
-    void on_pushButton_del_clicked();
-
 private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
-    add_action *window_add;
-    Del_action *window_del;
-    QSqlQuery *query;
-    QSqlDatabase db;
+    income_and_expenses *inc_exp;
 
 };
 #endif // MAINWINDOW_H
