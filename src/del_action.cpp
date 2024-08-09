@@ -7,6 +7,9 @@ Del_action::Del_action(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Мои финансы");
+
+    connect(this, SIGNAL(on_pushButton_delete_clicked()), this, SLOT(delete_row()));
+    connect(this, SIGNAL( on_tableView_clicked(const QModelIndex &)), this, SLOT(get_index(const QModelIndex &)));
 }
 
 
@@ -15,6 +18,7 @@ Del_action::~Del_action()
     delete ui;
     delete model;
 }
+
 
 void Del_action::draw_table()
 {
@@ -27,7 +31,7 @@ void Del_action::draw_table()
 }
 
 
-void Del_action::on_pushButton_delete_clicked()
+void Del_action::delete_row()
 {
     model->removeRow(row);
     emit calc();
@@ -35,7 +39,7 @@ void Del_action::on_pushButton_delete_clicked()
 }
 
 
-void Del_action::on_tableView_clicked(const QModelIndex &index)
+void Del_action::get_index(const QModelIndex &index)
 {
     row = index.row();
 }

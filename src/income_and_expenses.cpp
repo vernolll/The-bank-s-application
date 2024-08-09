@@ -1,9 +1,5 @@
-<<<<<<<< HEAD:src/income_and_expenses.cpp
-#include "include/income_and_expenses.h"
-========
 #include "include/mainwindow.h"
 #include "ui_mainwindow.h"
->>>>>>>> 42155020790d7efa28fe579edf3ecc515f8a5097:src/mainwindow.cpp
 
 income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
@@ -25,7 +21,7 @@ income_and_expenses::~income_and_expenses()
 }
 
 
-void income_and_expenses::on_pushButton_3_clicked()
+void income_and_expenses::open_inc_exp()
 {
     add_Database();
     ui->stackedWidget->setCurrentWidget(ui->page_expenses_income);
@@ -52,7 +48,7 @@ bool income_and_expenses::add_Database()
 }
 
 
-void income_and_expenses::on_pushButton_add_clicked()
+void income_and_expenses::open_add_action()
 {
     window_add->show();
 
@@ -80,7 +76,7 @@ void income_and_expenses::draw_graph(QVector<double> money)
 }
 
 
-void income_and_expenses::on_pushButton_del_clicked()
+void income_and_expenses::open_del_action()
 {
     window_del->show();
     window_del->draw_table();

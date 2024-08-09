@@ -23,14 +23,12 @@ public:
 
 signals:
     void calc();
-
-private slots:
     void on_pushButton_delete_clicked();
-
-
     void on_tableView_clicked(const QModelIndex &index);
 
-
+private slots:
+    void delete_row();
+    void get_index(const QModelIndex &index);
 
 private:
     Ui::Del_action *ui;

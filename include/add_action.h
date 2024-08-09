@@ -26,12 +26,12 @@ public:
 
 signals:
     void calc();
-
-private slots:
+    void on_pushButton_add_clicked();
     void on_comboBox_action_currentIndexChanged(const QString &arg1);
 
-    void on_pushButton_add_clicked();
-
+private slots:
+    void add_info();
+    void filling_comboBox(const QString &arg1);
 
 private:
     Ui::add_action *ui;

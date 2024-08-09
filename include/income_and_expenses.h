@@ -28,10 +28,10 @@ public:
     ~income_and_expenses();
 
 public slots:
-    void on_pushButton_3_clicked();
-    void on_pushButton_add_clicked();
+    void open_inc_exp();
+    void open_add_action();
     void draw_graph(QVector<double> money);
-    void on_pushButton_del_clicked();
+    void open_del_action();
     void calculations();
 
 

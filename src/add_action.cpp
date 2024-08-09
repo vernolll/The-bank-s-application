@@ -7,6 +7,9 @@ add_action::add_action(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Мои финансы");
+
+    connect(this, SIGNAL(on_pushButton_add_clicked()), this, SLOT(add_info()));
+    connect(this, SIGNAL(on_comboBox_action_currentIndexChanged(const QString &)), this, SLOT(filling_comboBox(const QString &)));
 }
 
 
@@ -30,7 +33,8 @@ bool add_action::connect_info()
     return true;
 }
 
-void add_action::on_comboBox_action_currentIndexChanged(const QString &arg1)
+
+void add_action::filling_comboBox(const QString &arg1)
 {
     query = new QSqlQuery(db);
     ui->comboBox_category->clear();
@@ -46,7 +50,8 @@ void add_action::on_comboBox_action_currentIndexChanged(const QString &arg1)
     }
 }
 
-void add_action::on_pushButton_add_clicked()
+
+void add_action::add_info()
 {
     double money = ui->lineEdit_money->text().toDouble();
     QString action = ui->comboBox_action->currentText();
@@ -77,5 +82,3 @@ void add_action::on_pushButton_add_clicked()
     }
 
 }
-
-

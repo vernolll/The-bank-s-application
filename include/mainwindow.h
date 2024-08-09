@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include "income_and_expenses.h"
+#include "include/income_and_expenses.h"
 
 
 class income_and_expenses;
@@ -21,18 +21,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
-
-
-
 signals:
     void on_pushButton_del_clicked();
     void on_pushButton_3_clicked();
     void on_pushButton_add_clicked();
-
-    void draw_graph(QVector<double> money);
-
-    void calculations();
 
 private:
     Ui::MainWindow *ui;

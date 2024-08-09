@@ -14,9 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     inc_exp = new income_and_expenses(ui, this);
 
-    connect(this, SIGNAL(on_pushButton_3_clicked()), inc_exp, SLOT(on_pushButton_3_clicked()));
-    connect(this, SIGNAL(on_pushButton_add_clicked()), inc_exp, SLOT(on_pushButton_add_clicked()));
-    connect(this, SIGNAL(on_pushButton_del_clicked()), inc_exp, SLOT(on_pushButton_del_clicked()));
+    connect(this, SIGNAL(on_pushButton_3_clicked()), inc_exp, SLOT(open_inc_exp()));
+    connect(this, SIGNAL(on_pushButton_add_clicked()), inc_exp, SLOT(open_add_action()));
+    connect(this, SIGNAL(on_pushButton_del_clicked()), inc_exp, SLOT(open_del_action()));
 }
 
 MainWindow::~MainWindow()
