@@ -16,13 +16,12 @@ add_action::add_action(QWidget *parent) :
 add_action::~add_action()
 {
     delete ui;
-    delete query;
 }
 
 
 bool add_action::connect_info()
 {
-    query = new QSqlQuery(db);
+    QSqlQuery* query = new QSqlQuery(db);
     query->prepare("SELECT Action, Category FROM Categories WHERE action = 'Доходы'");
     query->exec();
     while (query->next())
@@ -30,13 +29,15 @@ bool add_action::connect_info()
         QString type = query->value(1).toString();
         ui->comboBox_category->addItem(type);
     }
+    delete query;
     return true;
 }
 
 
 void add_action::filling_comboBox(const QString &arg1)
 {
-    query = new QSqlQuery(db);
+    QSqlQuery* query = new QSqlQuery(db);
+
     ui->comboBox_category->clear();
 
     query->prepare("SELECT Action, Category FROM Categories WHERE action = :act");
@@ -48,6 +49,7 @@ void add_action::filling_comboBox(const QString &arg1)
         QString type = query->value(1).toString();
         ui->comboBox_category->addItem(type);
     }
+    delete query;
 }
 
 
@@ -57,11 +59,10 @@ void add_action::add_info()
     double money = ui->lineEdit_money->text().toDouble();
     QString action = ui->comboBox_action->currentText();
     QString category = ui->comboBox_category->currentText();
-
+    QSqlQuery* query = new QSqlQuery(db);
 
     if (money != 0 && action != NULL && category != NULL)
     {
-        query = new QSqlQuery(db);
         query->prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
         query->bindValue(":act", action);
         query->bindValue(":cat", category);
@@ -83,5 +84,5 @@ void add_action::add_info()
     {
         QMessageBox::warning(this, "Ошибка", "Заполните поля правильно.");
     }
-
+    delete query;
 }

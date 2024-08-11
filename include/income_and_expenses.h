@@ -38,11 +38,11 @@ public slots:
     void draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp);
 
 
+
 private:
     Ui::MainWindow *ui;
     add_action *window_add;
     Del_action *window_del;
-    QSqlQuery *query;
     QSqlDatabase db;
 };
 

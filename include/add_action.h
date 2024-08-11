@@ -10,8 +10,6 @@
 #include <QDate>
 
 
-class MainWindow;
-
 namespace Ui {
 class add_action;
 }
@@ -37,7 +35,6 @@ private slots:
 private:
     Ui::add_action *ui;
     QSqlDatabase db;
-    QSqlQuery *query;
 };
 
 #endif // ADD_ACTION_H

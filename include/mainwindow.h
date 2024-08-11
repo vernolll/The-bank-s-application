@@ -28,8 +28,6 @@ signals:
 
 private:
     Ui::MainWindow *ui;
-    QStackedWidget *stackedWidget;
-    income_and_expenses *inc_exp;
 
 };
 #endif // MAINWINDOW_H

@@ -15,7 +15,6 @@ income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
 
 income_and_expenses::~income_and_expenses()
 {
-    //delete ui;
     delete window_add;
     delete window_del;
 }
@@ -90,12 +89,27 @@ void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
 }
 
 
+
 void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp)
 {
-    QPieSeries *series_inc = new QPieSeries();
-    QPieSeries *series_exp = new QPieSeries();
+    // Clear existing layout in diagram_incomes
+    if(ui->diagram_incomes->layout())
+    {
+        QLayout* existingLayout = ui->diagram_incomes->layout();
+        delete existingLayout;
+    }
 
-    // Combine data for income categories
+    // Clear existing layout in diagram_expenses
+    if(ui->diagram_expenses->layout())
+    {
+        QLayout* existingLayout = ui->diagram_expenses->layout();
+        delete existingLayout;
+    }
+
+    // Create and display the income chart
+    QPieSeries *series_inc = new QPieSeries();
+
+
     QHash<QString, double> incomeData;
     for (int i = 0; i < categories_inc.size(); i++)
     {
@@ -117,7 +131,21 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
         slice_inc->setLabel(it.key());
     }
 
-    // Combine data for expense categories
+    QChart *chart_inc = new QChart();
+    chart_inc->addSeries(series_inc);
+    chart_inc->setTitle("Доходы");
+    chart_inc->legend()->setVisible(true);
+    chart_inc->legend()->setAlignment(Qt::AlignRight);
+
+    QChartView *chartView_inc = new QChartView(chart_inc);
+    chartView_inc->setRenderHint(QPainter::Antialiasing);
+
+    QVBoxLayout* layout_inc = new QVBoxLayout(ui->diagram_incomes);
+    layout_inc->addWidget(chartView_inc);
+    ui->diagram_incomes->setLayout(layout_inc);
+
+    // Create and display the expense chart
+    QPieSeries* series_exp = new QPieSeries();
     QHash<QString, double> expenseData;
     for (int i = 0; i < categories_exp.size(); i++)
     {
@@ -139,43 +167,18 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
         slice_exp->setLabel(it.key());
     }
 
-    // Create and display the income chart
-    QChart *chart_inc = new QChart();
-    chart_inc->addSeries(series_inc);
-    chart_inc->setTitle("Доходы");
-    chart_inc->legend()->setVisible(true);
-    chart_inc->legend()->setAlignment(Qt::AlignRight);
-
-    QChartView *chartView_inc = new QChartView(chart_inc);
-    chartView_inc->setRenderHint(QPainter::Antialiasing);
-
-    if(ui->diagram_incomes)
-    {
-        QVBoxLayout *layout_inc = new QVBoxLayout(ui->diagram_incomes);
-        layout_inc->addWidget(chartView_inc);
-        ui->diagram_incomes->setLayout(layout_inc);
-    }
-
-    ui->diagram_incomes->update();
-
-    // Create and display the expense chart
     QChart *chart_exp = new QChart();
     chart_exp->addSeries(series_exp);
     chart_exp->setTitle("Расходы");
     chart_exp->legend()->setVisible(true);
     chart_exp->legend()->setAlignment(Qt::AlignRight);
 
-    QChartView *chartView_exp = new QChartView(chart_exp);
+    QChartView* chartView_exp = new QChartView(chart_exp);
     chartView_exp->setRenderHint(QPainter::Antialiasing);
 
-    if(ui->diagram_expenses)
-    {
-        QVBoxLayout *layout_exp = new QVBoxLayout(ui->diagram_expenses);
-        layout_exp->addWidget(chartView_exp);
-        ui->diagram_expenses->setLayout(layout_exp);
-    }
-
-    ui->diagram_expenses->update();
+    QVBoxLayout* layout_exp = new QVBoxLayout(ui->diagram_expenses);
+    layout_exp->addWidget(chartView_exp);
+    ui->diagram_expenses->setLayout(layout_exp);
 }
 
 
@@ -191,8 +194,8 @@ void income_and_expenses::calculations()
     QVector<QDate> transactionDates;
     QVector<double> moneyValues, money_inc, money_exp;
     QVector<QString> categories_inc, categories_exp;
-    query = new QSqlQuery(db);
-    QVector<double> wallet;
+
+    QSqlQuery* query = new QSqlQuery(db);
 
     if (db.open())
     {
@@ -210,39 +213,17 @@ void income_and_expenses::calculations()
                     money_exp.push_back(money);
                     money *= -1; // Multiply money by -1 for expenses
                     categories_exp.push_back(categor);
+                    moneyValues.push_back(money);
                 }
                 else
                 {
                     categories_inc.push_back(categor);
                     money_inc.push_back(money);
+                    moneyValues.push_back(money);
                 }
-                moneyValues.push_back(money);
                 transactionDates.push_back(date);
-
             }
         }
-        double balance = 0;
-        bool is_warning = false;
-        for (int i = 0; i < moneyValues.size(); i++)
-        {
-            balance += moneyValues[i];
-            wallet += balance;
-            if (balance <= 1000) // warning if there is not enough money in the account
-            {
-                is_warning = true;
-            }
-        }
-
-        if(is_warning)
-        {
-            ui->label_advice->setText("ВНИМАНИЕ: Вы были близки к кризису. Будьте осторожнее.");
-        }
-        else
-        {
-            ui->label_advice->setText("Советы: хорошо живете.");
-        }
-
-        ui->label_balance->setNum(balance);
     }
     else
     {
@@ -250,7 +231,32 @@ void income_and_expenses::calculations()
         calculations();
     }
 
-    qDebug() << categories_inc << money_inc << categories_exp << money_exp;
+    QVector<double> wallet;
+    double balance = 0;
+    bool is_warning = false;
+    for (int i = 0; i < moneyValues.size(); i++)
+    {
+        balance += moneyValues[i];
+        wallet += balance;
+        if (balance <= 1000) // warning if there is not enough money in the account
+        {
+            is_warning = true;
+        }
+    }
+
+
+    if(is_warning)
+    {
+        ui->label_advice->setText("ВНИМАНИЕ: Вы были близки к кризису. Будьте осторожнее.");
+    }
+    else
+    {
+        ui->label_advice->setText("Советы: хорошо живете.");
+    }
+
+
+    ui->label_balance->setNum(balance);
+
     draw_graph(wallet, transactionDates);
     draw_diagrams(categories_inc, money_inc, categories_exp, money_exp);
 }

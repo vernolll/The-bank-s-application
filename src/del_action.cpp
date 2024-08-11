@@ -3,7 +3,8 @@
 
 Del_action::Del_action(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Del_action)
+    ui(new Ui::Del_action),
+    model(nullptr)
 {
     ui->setupUi(this);
     setWindowTitle("Мои финансы");
