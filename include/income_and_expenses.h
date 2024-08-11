@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QWidget>
 #include <QDate>
+#include <QtCharts>
+#include <QChartView>
 #include "ui_mainwindow.h"
 #include "include/add_action.h"
 #include "include/qcustomplot.h"
@@ -33,6 +35,7 @@ public slots:
     void draw_graph(QVector<double> money, QVector<QDate> date);
     void open_del_action();
     void calculations();
+    void draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp);
 
 
 private:
