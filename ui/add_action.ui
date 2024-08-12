@@ -117,6 +117,13 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="date">
+    <date>
+     <year>2024</year>
+     <month>1</month>
+     <day>1</day>
+    </date>
+   </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">

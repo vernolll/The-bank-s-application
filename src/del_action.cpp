@@ -17,7 +17,7 @@ Del_action::Del_action(QWidget *parent) :
 Del_action::~Del_action()
 {
     delete ui;
-    delete model;
+    //delete model;
 }
 
 

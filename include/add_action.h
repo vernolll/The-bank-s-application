@@ -35,6 +35,7 @@ private slots:
 private:
     Ui::add_action *ui;
     QSqlDatabase db;
+    QSqlQuery query;
 };
 
 #endif // ADD_ACTION_H

@@ -56,20 +56,37 @@ void income_and_expenses::open_add_action()
 
 void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
 {
+    // Create a map to store the last money value for each date
+    QMap<QDate, double> dateMoneyMap;
+
+    for (int i = 0; i < date.size(); ++i)
+    {
+        dateMoneyMap[date[i]] = money[i];
+    }
+
+    // Clear the original vectors and populate them with unique dates and corresponding money
+    QVector<QDate> uniqueDates = dateMoneyMap.keys().toVector();
+    QVector<double> uniqueMoney;
+
+    for (const QDate &d : uniqueDates)
+    {
+        uniqueMoney.append(dateMoneyMap[d]);
+    }
+
     ui->Chart->clearGraphs();
     ui->Chart->addGraph();
     QVector<double> dateIndices;
 
-    for (int i = 0; i < date.size(); ++i)
+    for (int i = 0; i < uniqueDates.size(); ++i)
     {
         dateIndices.append(i);
     }
 
-    ui->Chart->graph(0)->setData(dateIndices, money);
+    ui->Chart->graph(0)->setData(dateIndices, uniqueMoney);
 
     // Set the tick labels to display dates
     QVector<QString> labels;
-    for (const QDate &d : date)
+    for (const QDate &d : uniqueDates)
     {
         labels.append(d.toString("dd/MM/yyyy"));
     }
@@ -82,7 +99,7 @@ void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
     ui->Chart->xAxis->setRange(0, dateIndices.size()-1);
 
     // Adjust Y-axis range
-    ui->Chart->yAxis->setRange(*std::min_element(money.begin(), money.end()), *std::max_element(money.begin(), money.end()));
+    ui->Chart->yAxis->setRange(*std::min_element(uniqueMoney.begin(), uniqueMoney.end()), *std::max_element(uniqueMoney.begin(), uniqueMoney.end()));
 
     // Redraw the plot
     ui->Chart->replot();
@@ -92,39 +109,42 @@ void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
 
 void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp)
 {
-    // Clear existing layout in diagram_incomes
-    if(ui->diagram_incomes->layout())
+    // Clear existing layout in diagram_incomes if required
+    QLayout* existingLayout_inc = ui->diagram_incomes->layout();
+    if (existingLayout_inc)
     {
-        QLayout* existingLayout = ui->diagram_incomes->layout();
-        delete existingLayout;
+        QLayoutItem *child;
+        while ((child = existingLayout_inc->takeAt(0)) != nullptr)
+        {
+            delete child->widget();
+            delete child;
+        }
+        delete existingLayout_inc;
     }
 
-    // Clear existing layout in diagram_expenses
-    if(ui->diagram_expenses->layout())
+    // Clear existing layout in diagram_expenses if required
+    QLayout* existingLayout_exp = ui->diagram_expenses->layout();
+    if (existingLayout_exp)
     {
-        QLayout* existingLayout = ui->diagram_expenses->layout();
-        delete existingLayout;
+        QLayoutItem *child;
+        while ((child = existingLayout_exp->takeAt(0)) != nullptr)
+        {
+            delete child->widget();
+            delete child;
+        }
+        delete existingLayout_exp;
     }
 
     // Create and display the income chart
-    QPieSeries *series_inc = new QPieSeries();
-
-
+    QPieSeries *series_inc = new QPieSeries(ui->diagram_incomes); // Set parent
     QHash<QString, double> incomeData;
+
     for (int i = 0; i < categories_inc.size(); i++)
     {
         QString category = categories_inc[i];
-        if (incomeData.contains(category))
-        {
-            incomeData[category] += money_inc[i];
-        }
-        else
-        {
-            incomeData.insert(category, money_inc[i]);
-        }
+        incomeData[category] += money_inc[i]; // Simplified insertion
     }
 
-    // Add income categories to the income series
     for (auto it = incomeData.begin(); it != incomeData.end(); ++it)
     {
         QPieSlice *slice_inc = series_inc->append(it.key(), it.value());
@@ -137,7 +157,7 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
     chart_inc->legend()->setVisible(true);
     chart_inc->legend()->setAlignment(Qt::AlignRight);
 
-    QChartView *chartView_inc = new QChartView(chart_inc);
+    QChartView *chartView_inc = new QChartView(chart_inc, ui->diagram_incomes); // Set parent
     chartView_inc->setRenderHint(QPainter::Antialiasing);
 
     QVBoxLayout* layout_inc = new QVBoxLayout(ui->diagram_incomes);
@@ -145,35 +165,28 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
     ui->diagram_incomes->setLayout(layout_inc);
 
     // Create and display the expense chart
-    QPieSeries* series_exp = new QPieSeries();
+    QPieSeries *series_exp = new QPieSeries(ui->diagram_expenses); // Set parent
     QHash<QString, double> expenseData;
+
     for (int i = 0; i < categories_exp.size(); i++)
     {
         QString category = categories_exp[i];
-        if (expenseData.contains(category))
-        {
-            expenseData[category] += money_exp[i];
-        }
-        else
-        {
-            expenseData.insert(category, money_exp[i]);
-        }
+        expenseData[category] += money_exp[i]; // Simplified insertion
     }
 
-    // Add expense categories to the expense series
     for (auto it = expenseData.begin(); it != expenseData.end(); ++it)
     {
         QPieSlice *slice_exp = series_exp->append(it.key(), it.value());
         slice_exp->setLabel(it.key());
     }
 
-    QChart *chart_exp = new QChart();
+    QChart *chart_exp = new QChart(); // No parent here
     chart_exp->addSeries(series_exp);
     chart_exp->setTitle("Расходы");
     chart_exp->legend()->setVisible(true);
     chart_exp->legend()->setAlignment(Qt::AlignRight);
 
-    QChartView* chartView_exp = new QChartView(chart_exp);
+    QChartView *chartView_exp = new QChartView(chart_exp, ui->diagram_expenses); // Set parent
     chartView_exp->setRenderHint(QPainter::Antialiasing);
 
     QVBoxLayout* layout_exp = new QVBoxLayout(ui->diagram_expenses);
@@ -195,18 +208,19 @@ void income_and_expenses::calculations()
     QVector<double> moneyValues, money_inc, money_exp;
     QVector<QString> categories_inc, categories_exp;
 
-    QSqlQuery* query = new QSqlQuery(db);
+    QSqlQuery query(db);
 
     if (db.open())
     {
-        if(query->exec("SELECT Money, Action, Date, Category FROM Actions"))
+        query.prepare("SELECT Money, Action, Date, Category FROM Actions");
+        if(query.exec())
         {
-            while (query->next())
+            while (query.next())
             {
-                double money = query->value(0).toDouble();
-                QString action = query->value(1).toString();
-                QDate date = query->value(2).toDate();
-                QString categor = query->value(3).toString();
+                double money = query.value(0).toDouble();
+                QString action = query.value(1).toString();
+                QDate date = query.value(2).toDate();
+                QString categor = query.value(3).toString();
 
                 if (action == "Расходы")
                 {
@@ -256,7 +270,6 @@ void income_and_expenses::calculations()
 
 
     ui->label_balance->setNum(balance);
-
     draw_graph(wallet, transactionDates);
     draw_diagrams(categories_inc, money_inc, categories_exp, money_exp);
 }

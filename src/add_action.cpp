@@ -21,35 +21,33 @@ add_action::~add_action()
 
 bool add_action::connect_info()
 {
-    QSqlQuery* query = new QSqlQuery(db);
-    query->prepare("SELECT Action, Category FROM Categories WHERE action = 'Доходы'");
-    query->exec();
-    while (query->next())
+    QSqlQuery query(db);
+    query.prepare("SELECT Action, Category FROM Categories WHERE action = 'Доходы'");
+    query.exec();
+    while (query.next())
     {
-        QString type = query->value(1).toString();
+        QString type = query.value(1).toString();
         ui->comboBox_category->addItem(type);
     }
-    delete query;
     return true;
 }
 
 
 void add_action::filling_comboBox(const QString &arg1)
 {
-    QSqlQuery* query = new QSqlQuery(db);
+    QSqlQuery query(db);
 
     ui->comboBox_category->clear();
 
-    query->prepare("SELECT Action, Category FROM Categories WHERE action = :act");
-    query->bindValue(":act", arg1);
-    query->exec();
+    query.prepare("SELECT Action, Category FROM Categories WHERE action = :act");
+    query.bindValue(":act", arg1);
+    query.exec();
 
-    while (query->next())
+    while (query.next())
     {
-        QString type = query->value(1).toString();
+        QString type = query.value(1).toString();
         ui->comboBox_category->addItem(type);
     }
-    delete query;
 }
 
 
@@ -59,30 +57,30 @@ void add_action::add_info()
     double money = ui->lineEdit_money->text().toDouble();
     QString action = ui->comboBox_action->currentText();
     QString category = ui->comboBox_category->currentText();
-    QSqlQuery* query = new QSqlQuery(db);
 
-    if (money != 0 && action != NULL && category != NULL)
+    QSqlQuery query(db); // Create an instance of QSqlQuery on the stack
+
+    if (money != 0 && !action.isEmpty() && !category.isEmpty()) // use isEmpty() instead of NULL
     {
-        query->prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
-        query->bindValue(":act", action);
-        query->bindValue(":cat", category);
-        query->bindValue(":mon", money);
-        query->bindValue(":day", date);
+        query.prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
+        query.bindValue(":act", action);
+        query.bindValue(":cat", category);
+        query.bindValue(":mon", money);
+        query.bindValue(":day", date);
 
-        if (query->exec())
+        if (query.exec())
         {
             qDebug() << "Insertion successful!";
             emit calc();
             this->close();
-
-        } else
+        }
+        else
         {
-            qDebug() << "Insertion failed:" << query->lastError().text();
+            qDebug() << "Insertion failed:" << query.lastError().text();
         }
     }
     else
     {
         QMessageBox::warning(this, "Ошибка", "Заполните поля правильно.");
     }
-    delete query;
 }

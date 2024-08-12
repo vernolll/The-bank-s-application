@@ -6,6 +6,7 @@
 #include <QDate>
 #include <QtCharts>
 #include <QChartView>
+#include <algorithm>
 #include "ui_mainwindow.h"
 #include "include/add_action.h"
 #include "include/qcustomplot.h"
@@ -43,6 +44,7 @@ private:
     Ui::MainWindow *ui;
     add_action *window_add;
     Del_action *window_del;
+    QSqlQuery query;
     QSqlDatabase db;
 };
 
