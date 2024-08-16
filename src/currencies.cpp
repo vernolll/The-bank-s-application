@@ -1,8 +1,5 @@
 #include "include/currencies.h"
 
-#include <QString>
-#include <QRegularExpression>
-#include <QDebug>
 
 Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
@@ -11,25 +8,30 @@ Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
 {
     // Initialize curl and check if successful
     curl = curl_easy_init();
-    if (curl) {
+    if (curl)
+    {
         // Set SSL options in the constructor
         curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/ssl/certs/ca-certificates.crt");
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-        // Fetch data
         fetchData();
-    } else {
+    }
+    else
+    {
         qDebug() << "Failed to initialize curl";
     }
 }
 
+
 Currencies::~Currencies()
 {
-    if (curl) {
+    if (curl)
+    {
         curl_easy_cleanup(curl);  // Clean up curl when the object is destroyed
     }
 }
+
 
 void Currencies::open_currencies()
 {
@@ -37,16 +39,19 @@ void Currencies::open_currencies()
 }
 
 // Callback function for curl to store the response
-size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
-    QString *data = reinterpret_cast<QString*>(userp);
-    *data += QString::fromLatin1(reinterpret_cast<char*>(buffer), size * nmemb);
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+    QByteArray *data = reinterpret_cast<QByteArray*>(userp);
+    *data += QByteArray::fromRawData(reinterpret_cast<char*>(buffer), size * nmemb);
     return size * nmemb;
 }
 
+
 void Currencies::fetchData()
 {
-    if (curl) {  // Use the same curl instance created in the constructor
-        QString response;
+    if (curl)
+    {
+        QByteArray response; // Use QByteArray
 
         // Set URL
         curl_easy_setopt(curl, CURLOPT_URL, "https://cbr.ru/currency_base/daily/");
@@ -57,16 +62,22 @@ void Currencies::fetchData()
 
         // Perform the request
         CURLcode res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
+        if (res != CURLE_OK)
+        {
             qDebug() << "Error fetching data:" << curl_easy_strerror(res);
-        } else {
-            // Parse the data
-            parseData(response);
         }
-    } else {
+        else
+        {
+            QString responseString = QString::fromUtf8(response);
+            parseData(responseString);
+        }
+    }
+    else
+    {
         qDebug() << "Curl is not initialized";
     }
 }
+
 
 void Currencies::parseData(const QString &content)
 {
@@ -77,15 +88,17 @@ void Currencies::parseData(const QString &content)
     while (i.hasNext())
     {
         QRegularExpressionMatch match = i.next();
-        QString unit = match.captured(1);
+        int unit = match.captured(1).toInt();
         QString currencyCode = match.captured(2);
         QString currencyName = match.captured(3);
         QString exchangeRate = match.captured(4);
+        QString course = match.captured(5);
 
-        qDebug() << "Unit:" << unit;
-        qDebug() << "Currency Code:" << currencyCode;
-        qDebug() << "Currency Name:" << currencyName;
-        qDebug() << "Exchange Rate:" << exchangeRate;
+        qDebug() << "Цифр. код:" << unit;
+        qDebug() << "Букв. код:" << currencyCode;
+        qDebug() << "Единиц:" << currencyName;
+        qDebug() << "Валюта:" << exchangeRate;
+        qDebug() << "Курс:" << course;
         qDebug() << "-------------------";
     }
 }
