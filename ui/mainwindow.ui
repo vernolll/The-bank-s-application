@@ -24,21 +24,34 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
-    <widget class="QWidget" name="page">
-     <widget class="QPushButton" name="pushButton_3">
+    <widget class="QWidget" name="page_main">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>340</x>
         <y>250</y>
-        <width>113</width>
-        <height>28</height>
+        <width>115</width>
+        <height>64</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Анализ финансов</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QPushButton" name="pushButton_balance">
+         <property name="text">
+          <string>Анализ финансов</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_cur">
+         <property name="text">
+          <string>Рынок валют</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="page_expenses_income">
@@ -123,7 +136,7 @@
        <string>Советы:</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>620</x>
@@ -172,6 +185,7 @@
       </layout>
      </widget>
     </widget>
+    <widget class="QWidget" name="page_currencies"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

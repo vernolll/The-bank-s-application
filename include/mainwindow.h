@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include "include/income_and_expenses.h"
+#include "include/currencies.h"
 
 
 class income_and_expenses;
+class Currencies;
 
 
 QT_BEGIN_NAMESPACE
@@ -23,11 +25,14 @@ public:
 
 signals:
     void on_pushButton_del_clicked();
-    void on_pushButton_3_clicked();
+    void on_pushButton_balance_clicked();
     void on_pushButton_add_clicked();
+    void on_pushButton_cur_clicked();
 
 private:
     Ui::MainWindow *ui;
+    income_and_expenses *inc_exp;
+    Currencies *curs;
 
 };
 #endif // MAINWINDOW_H

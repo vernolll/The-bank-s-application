@@ -1,4 +1,4 @@
-QT       += core gui sql charts
+QT       += core gui sql charts network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -15,8 +15,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+LIBS += -LC:\curl-8.9.1_1-win64-mingw\bin -lcurl
+LIBS += -LC:\curl-8.9.1_1-win64-mingw\lib -lcurl
+
+INCLUDEPATH += C:\curl-8.9.1_1-win64-mingw\include
+
+
 SOURCES += \
     src/add_action.cpp \
+    src/currencies.cpp \
     src/del_action.cpp \
     src/income_and_expenses.cpp \
     src/main.cpp \
@@ -25,6 +32,7 @@ SOURCES += \
 
 HEADERS += \
     include/add_action.h \
+    include/currencies.h \
     include/del_action.h \
     include/add_action.h \
     include/del_action.h \
