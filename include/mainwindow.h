@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QSqlDatabase>
 #include "include/income_and_expenses.h"
 #include "include/currencies.h"
 
@@ -21,6 +22,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    bool add_Database();
     ~MainWindow();
 
 signals:
@@ -28,11 +30,15 @@ signals:
     void on_pushButton_balance_clicked();
     void on_pushButton_add_clicked();
     void on_pushButton_cur_clicked();
+    void on_pushButton_back_2_clicked();
+    void on_pushButton_back_clicked();
 
 private:
     Ui::MainWindow *ui;
     income_and_expenses *inc_exp;
     Currencies *curs;
+    QSqlDatabase db;
+
 
 };
 #endif // MAINWINDOW_H

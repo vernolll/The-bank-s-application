@@ -58,9 +58,9 @@ void add_action::add_info()
     QString action = ui->comboBox_action->currentText();
     QString category = ui->comboBox_category->currentText();
 
-    QSqlQuery query(db); // Create an instance of QSqlQuery on the stack
+    QSqlQuery query(db);
 
-    if (money != 0 && !action.isEmpty() && !category.isEmpty()) // use isEmpty() instead of NULL
+    if (money != 0 && !action.isEmpty() && !category.isEmpty())
     {
         query.prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
         query.bindValue(":act", action);

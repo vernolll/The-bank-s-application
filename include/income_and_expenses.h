@@ -8,6 +8,7 @@
 #include <QChartView>
 #include <algorithm>
 #include "ui_mainwindow.h"
+#include "include/mainwindow.h"
 #include "include/add_action.h"
 #include "include/qcustomplot.h"
 #include "include/del_action.h"
@@ -26,14 +27,14 @@ class income_and_expenses : public QObject
 {
     Q_OBJECT
 public:
-    explicit income_and_expenses(Ui::MainWindow *ui, QObject *parent = nullptr);
-    bool add_Database();
+    explicit income_and_expenses(Ui::MainWindow *ui, QSqlDatabase database, QObject *parent = nullptr);
     ~income_and_expenses();
 
 public slots:
     void open_inc_exp();
+    void back();
     void open_add_action();
-    void draw_graph(QVector<double> money, QVector<QDate> date);
+    void draw_graph(QVector<QPair<QDate, double>> wallet);
     void open_del_action();
     void calculations();
     void draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp);

@@ -8,7 +8,8 @@
 
 class MainWindow;
 
-namespace Ui {
+namespace Ui
+{
 class Del_action;
 }
 

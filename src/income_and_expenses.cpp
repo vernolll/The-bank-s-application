@@ -1,9 +1,10 @@
 #include "include/mainwindow.h"
 #include "ui_mainwindow.h"
 
-income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QObject *parent) :
+income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QSqlDatabase database, QObject *parent) :
     QObject(parent),
-    ui(ui)
+    ui(ui),
+    db(database)
 {
     window_add = new add_action();
     window_del = new Del_action();
@@ -22,49 +23,34 @@ income_and_expenses::~income_and_expenses()
 
 void income_and_expenses::open_inc_exp()
 {
-    add_Database();
     ui->stackedWidget->setCurrentWidget(ui->page_expenses_income);
-    window_add->connect_info();
     calculations();
 }
 
 
-bool income_and_expenses::add_Database()
+void income_and_expenses::back()
 {
-    db = QSqlDatabase::addDatabase("QPSQL");
-    db.setDatabaseName("finance");
-    db.setUserName("postgres");
-    db.setPassword("2k0a0r6AS");
-
-    if (!db.open())
-    {
-        qDebug() << "Error: Unable to open database" << db.lastError().text();
-        return false;
-    }
-
-    qDebug() << "Database connected successfully.";
-    return true;
+    ui->stackedWidget->setCurrentWidget(ui->page_main);
 }
 
 
 void income_and_expenses::open_add_action()
 {
+    window_add->connect_info();
     window_add->show();
 
 }
 
 
-void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
+void income_and_expenses::draw_graph(QVector<QPair<QDate, double>> wallet)
 {
-    // Create a map to store the last money value for each date
     QMap<QDate, double> dateMoneyMap;
 
-    for (int i = 0; i < date.size(); ++i)
+    for (const auto &entry : wallet)
     {
-        dateMoneyMap[date[i]] = money[i];
+        dateMoneyMap[entry.first] = entry.second;
     }
 
-    // Clear the original vectors and populate them with unique dates and corresponding money
     QVector<QDate> uniqueDates = dateMoneyMap.keys().toVector();
     QVector<double> uniqueMoney;
 
@@ -84,27 +70,22 @@ void income_and_expenses::draw_graph(QVector<double> money, QVector<QDate> date)
 
     ui->Chart->graph(0)->setData(dateIndices, uniqueMoney);
 
-    // Set the tick labels to display dates
     QVector<QString> labels;
     for (const QDate &d : uniqueDates)
     {
         labels.append(d.toString("dd/MM/yyyy"));
     }
+
     ui->Chart->xAxis->setAutoTicks(false);
     ui->Chart->xAxis->setAutoTickLabels(false);
     ui->Chart->xAxis->setTickVector(dateIndices);
     ui->Chart->xAxis->setTickVectorLabels(labels);
 
-    // Adjust X-axis range
     ui->Chart->xAxis->setRange(0, dateIndices.size()-1);
-
-    // Adjust Y-axis range
     ui->Chart->yAxis->setRange(*std::min_element(uniqueMoney.begin(), uniqueMoney.end()), *std::max_element(uniqueMoney.begin(), uniqueMoney.end()));
 
-    // Redraw the plot
     ui->Chart->replot();
 }
-
 
 
 void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp)
@@ -242,22 +223,55 @@ void income_and_expenses::calculations()
     else
     {
         db.close();
+        db.open();
         calculations();
     }
 
-    QVector<double> wallet;
+    QVector<QPair<QDate, double>> sortedData;
+
+    for (int i = 0; i < transactionDates.size(); ++i)
+    {
+        sortedData.append(qMakePair(transactionDates[i], moneyValues[i]));
+    }
+
+    std::sort(sortedData.begin(), sortedData.end(), [](const QPair<QDate, double>& a, const QPair<QDate, double>& b)
+    {
+        return a.first < b.first;
+    });
+
+    QVector<QPair<QDate, double>> summedData;
+
+    for (const auto& entry : sortedData)
+    {
+        if (!summedData.isEmpty() && summedData.last().first == entry.first)
+        {
+            summedData.last().second += entry.second;
+        }
+        else
+        {
+            summedData.append(entry);
+        }
+    }
+
+    for (int i = 0; i < summedData.size(); ++i)
+    {
+        transactionDates[i] = summedData[i].first;
+        moneyValues[i] = summedData[i].second;
+    }
+
+    QVector<QPair<QDate, double>> wallet;
     double balance = 0;
     bool is_warning = false;
-    for (int i = 0; i < moneyValues.size(); i++)
+
+    for (int i = 0; i < summedData.size(); i++)
     {
-        balance += moneyValues[i];
-        wallet += balance;
+        balance += summedData[i].second;
+        wallet.append(qMakePair(transactionDates[i], balance));
         if (balance <= 1000) // warning if there is not enough money in the account
         {
             is_warning = true;
         }
     }
-
 
     if(is_warning)
     {
@@ -268,8 +282,7 @@ void income_and_expenses::calculations()
         ui->label_advice->setText("Советы: хорошо живете.");
     }
 
-
     ui->label_balance->setNum(balance);
-    draw_graph(wallet, transactionDates);
+    draw_graph(wallet);
     draw_diagrams(categories_inc, money_inc, categories_exp, money_exp);
 }
