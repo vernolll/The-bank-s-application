@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(on_pushButton_cur_clicked()), curs, SLOT(open_currencies()));
     connect(this, SIGNAL(on_pushButton_back_2_clicked()), inc_exp, SLOT(back()));
     connect(this, SIGNAL(on_pushButton_back_clicked()), curs, SLOT(back()));
+    connect(this, SIGNAL(on_pushButton_search_clicked()), curs, SLOT(searching()));
 }
 
 MainWindow::~MainWindow()
@@ -47,5 +48,3 @@ bool MainWindow::add_Database()
     qDebug() << "Database connected successfully.";
     return true;
 }
-
-

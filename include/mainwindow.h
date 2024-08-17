@@ -32,6 +32,7 @@ signals:
     void on_pushButton_cur_clicked();
     void on_pushButton_back_2_clicked();
     void on_pushButton_back_clicked();
+    void on_pushButton_search_clicked();
 
 private:
     Ui::MainWindow *ui;

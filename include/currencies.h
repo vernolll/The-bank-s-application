@@ -10,6 +10,7 @@
 #include <QTableView>
 #include <QSqlTableModel>
 #include <QSqlQuery>
+#include <QSqlQueryModel>
 #include <curl/curl.h>
 
 class MainWindow;
@@ -33,6 +34,7 @@ private slots:
     void fetchData();
     void parseData(const QString &content);
     void draw_table();
+    void searching();
 
 private:
     Ui::MainWindow *ui;

@@ -93,8 +93,8 @@ void Currencies::parseData(const QString &content)
 {
     QSqlQuery query(db);
 
-    query.exec("DROP TABLE IF EXISTS ExchangeRate");
-    query.exec("CREATE TABLE ExchangeRate (intcode INTEGER, letcode TEXT, unit INTEGER, currency TEXT, course REAL)");
+    query.exec("DROP TABLE IF EXISTS exchangerate");
+    query.exec("CREATE TABLE exchangerate (intcode INTEGER, letcode TEXT, unit INTEGER, currency TEXT, course REAL)");
 
     QRegularExpression re(R"(<tr>\s*<td>(\d+)</td>\s*<td>(\w+)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>)");
     QRegularExpressionMatchIterator i = re.globalMatch(content);
@@ -117,7 +117,6 @@ void Currencies::parseData(const QString &content)
         query.bindValue(":uni", currencyName);
         query.bindValue(":curr", exchangeRate);
         query.bindValue(":cour", coursee);
-        query.exec();
         if (!query.exec())
         {
             qDebug() << "Insertion failed.";
@@ -129,22 +128,51 @@ void Currencies::parseData(const QString &content)
 
 void Currencies::draw_table()
 {
-
     model = new QSqlTableModel();
     model->setTable("exchangerate");
 
-    model->setHeaderData(0, Qt::Horizontal, "Unit");
-    model->setHeaderData(1, Qt::Horizontal, "Currency Code");
-    model->setHeaderData(2, Qt::Horizontal, "Currency Name");
-    model->setHeaderData(3, Qt::Horizontal, "Exchange Rate");
-    model->setHeaderData(4, Qt::Horizontal, "Course");
+    model->setHeaderData(0, Qt::Horizontal, "Цифр.Код");
+    model->setHeaderData(1, Qt::Horizontal, "Букв.Код");
+    model->setHeaderData(2, Qt::Horizontal, "Единица");
+    model->setHeaderData(3, Qt::Horizontal, "Наименование");
+    model->setHeaderData(4, Qt::Horizontal, "Курс");
     model->select();
 
     ui->tableView_currencies->setModel(model);
     ui->tableView_currencies->resizeColumnsToContents();
+
+    ui->tableView_currencies->setColumnWidth(3, 320);
+    ui->tableView_currencies->setColumnWidth(4, 148);
 }
 
 
+void Currencies::searching()
+{
+    QString data = ui->lineEdit_search->text();
+    QSqlQuery query(db);
 
+    query.prepare("SELECT * FROM exchangerate WHERE currency LIKE :info");
+    query.bindValue(":info", "%" + data + "%");
 
+    if (query.exec())
+    {
+        QSqlQueryModel *searchModel = new QSqlQueryModel();
+        searchModel->setQuery(query);
 
+        searchModel->setHeaderData(0, Qt::Horizontal, "Цифр.Код");
+        searchModel->setHeaderData(1, Qt::Horizontal, "Букв.Код");
+        searchModel->setHeaderData(2, Qt::Horizontal, "Единица");
+        searchModel->setHeaderData(3, Qt::Horizontal, "Наименование");
+        searchModel->setHeaderData(4, Qt::Horizontal, "Курс");
+
+        ui->tableView_currencies->setModel(searchModel);
+        ui->tableView_currencies->resizeColumnsToContents();
+
+        ui->tableView_currencies->setColumnWidth(3, 320);
+        ui->tableView_currencies->setColumnWidth(4, 148);
+    }
+    else
+    {
+        qDebug() << "Search failed:" << query.lastError().text();
+    }
+}
