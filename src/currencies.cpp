@@ -4,8 +4,26 @@
 Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
     ui(ui),
-    curl(nullptr)  // Initialize curl to nullptr
+    curl(nullptr),
+    model(nullptr)
 {
+}
+
+
+Currencies::~Currencies()
+{
+    if (curl)
+    {
+        curl_easy_cleanup(curl);  // Clean up curl when the object is destroyed
+    }
+    delete model;
+}
+
+
+void Currencies::open_currencies()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_currencies);
+
     // Initialize curl and check if successful
     curl = curl_easy_init();
     if (curl)
@@ -24,19 +42,11 @@ Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
 }
 
 
-Currencies::~Currencies()
+void Currencies::back()
 {
-    if (curl)
-    {
-        curl_easy_cleanup(curl);  // Clean up curl when the object is destroyed
-    }
+    ui->stackedWidget->setCurrentWidget(ui->page_main);
 }
 
-
-void Currencies::open_currencies()
-{
-    ui->stackedWidget->setCurrentWidget(ui->page_currencies);
-}
 
 // Callback function for curl to store the response
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -81,7 +91,11 @@ void Currencies::fetchData()
 
 void Currencies::parseData(const QString &content)
 {
-    // Regular expressions to capture required data
+    QSqlQuery query(db);
+
+    query.exec("DROP TABLE IF EXISTS ExchangeRate");
+    query.exec("CREATE TABLE ExchangeRate (intcode INTEGER, letcode TEXT, unit INTEGER, currency TEXT, course REAL)");
+
     QRegularExpression re(R"(<tr>\s*<td>(\d+)</td>\s*<td>(\w+)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>)");
     QRegularExpressionMatchIterator i = re.globalMatch(content);
 
@@ -90,15 +104,47 @@ void Currencies::parseData(const QString &content)
         QRegularExpressionMatch match = i.next();
         int unit = match.captured(1).toInt();
         QString currencyCode = match.captured(2);
-        QString currencyName = match.captured(3);
+        int currencyName = match.captured(3).toInt();
         QString exchangeRate = match.captured(4);
         QString course = match.captured(5);
+        QStringList parts = course.split(',');
+        QString formattedString = parts.join('.');
+        double coursee = formattedString.toDouble();
 
-        qDebug() << "Цифр. код:" << unit;
-        qDebug() << "Букв. код:" << currencyCode;
-        qDebug() << "Единиц:" << currencyName;
-        qDebug() << "Валюта:" << exchangeRate;
-        qDebug() << "Курс:" << course;
-        qDebug() << "-------------------";
+        query.prepare("INSERT INTO ExchangeRate (intcode, letcode, unit, currency, course) VALUES (:intc, :letc, :uni, :curr, :cour)");
+        query.bindValue(":intc", unit);
+        query.bindValue(":letc", currencyCode);
+        query.bindValue(":uni", currencyName);
+        query.bindValue(":curr", exchangeRate);
+        query.bindValue(":cour", coursee);
+        query.exec();
+        if (!query.exec())
+        {
+            qDebug() << "Insertion failed.";
+        }
     }
+    draw_table();
 }
+
+
+void Currencies::draw_table()
+{
+
+    model = new QSqlTableModel();
+    model->setTable("exchangerate");
+
+    model->setHeaderData(0, Qt::Horizontal, "Unit");
+    model->setHeaderData(1, Qt::Horizontal, "Currency Code");
+    model->setHeaderData(2, Qt::Horizontal, "Currency Name");
+    model->setHeaderData(3, Qt::Horizontal, "Exchange Rate");
+    model->setHeaderData(4, Qt::Horizontal, "Course");
+    model->select();
+
+    ui->tableView_currencies->setModel(model);
+    ui->tableView_currencies->resizeColumnsToContents();
+}
+
+
+
+
+
