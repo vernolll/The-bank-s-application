@@ -6,10 +6,12 @@
 #include <QSqlDatabase>
 #include "include/income_and_expenses.h"
 #include "include/currencies.h"
+#include "include/converter.h"
 
 
 class income_and_expenses;
 class Currencies;
+class Converter;
 
 
 QT_BEGIN_NAMESPACE
@@ -33,11 +35,15 @@ signals:
     void on_pushButton_back_2_clicked();
     void on_pushButton_back_clicked();
     void on_pushButton_search_clicked();
+    void on_pushButton_converter_clicked();
+    void on_pushButton_back_3_clicked();
+    void on_pushButton_count_clicked();
 
 private:
     Ui::MainWindow *ui;
     income_and_expenses *inc_exp;
     Currencies *curs;
+    Converter *conv;
     QSqlDatabase db;
 
 

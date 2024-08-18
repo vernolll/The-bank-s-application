@@ -20,9 +20,15 @@ Currencies::~Currencies()
 }
 
 
-void Currencies::open_currencies()
+void Currencies::open()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_currencies);
+    open_currencies();
+}
+
+
+void Currencies::open_currencies()
+{
 
     // Initialize curl and check if successful
     curl = curl_easy_init();

@@ -12,23 +12,29 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->stackedWidget->setCurrentWidget(ui->page_main);
 
-    income_and_expenses *inc_exp = new income_and_expenses(ui, db, this);
-    Currencies *curs = new Currencies(ui, this);
+    inc_exp = new income_and_expenses(ui, db, this);
+    curs = new Currencies(ui, this);
+    conv = new Converter(ui, this);
 
     connect(this, SIGNAL(on_pushButton_balance_clicked()), inc_exp, SLOT(open_inc_exp()));
     connect(this, SIGNAL(on_pushButton_add_clicked()), inc_exp, SLOT(open_add_action()));
     connect(this, SIGNAL(on_pushButton_del_clicked()), inc_exp, SLOT(open_del_action()));
-    connect(this, SIGNAL(on_pushButton_cur_clicked()), curs, SLOT(open_currencies()));
+    connect(this, SIGNAL(on_pushButton_cur_clicked()), curs, SLOT(open()));
     connect(this, SIGNAL(on_pushButton_back_2_clicked()), inc_exp, SLOT(back()));
     connect(this, SIGNAL(on_pushButton_back_clicked()), curs, SLOT(back()));
     connect(this, SIGNAL(on_pushButton_search_clicked()), curs, SLOT(searching()));
+    connect(this, SIGNAL(on_pushButton_converter_clicked()), conv, SLOT(open_converter()));
+    connect(this, SIGNAL(on_pushButton_back_3_clicked()), conv, SLOT(back_to_main()));
+    connect(this, SIGNAL(on_pushButton_count_clicked()), conv, SLOT(get_info()));
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete inc_exp;
     delete curs;
+    delete conv;
 }
 
 

@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="page_main">
      <widget class="QWidget" name="layoutWidget">
@@ -33,7 +33,7 @@
         <x>340</x>
         <y>250</y>
         <width>115</width>
-        <height>64</height>
+        <height>98</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -48,6 +48,13 @@
         <widget class="QPushButton" name="pushButton_cur">
          <property name="text">
           <string>Рынок валют</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_converter">
+         <property name="text">
+          <string>Конвертор валют</string>
          </property>
         </widget>
        </item>
@@ -243,6 +250,135 @@
         </widget>
        </item>
       </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_converter">
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>190</y>
+        <width>185</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Конвертор валют&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_back_3">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>500</y>
+        <width>93</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Назад</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>270</y>
+        <width>218</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QComboBox" name="comboBox"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>270</y>
+        <width>218</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="lineEdit_2"/>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_2"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>250</y>
+        <width>41</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Сумма</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>250</y>
+        <width>44</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Валюта</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>250</y>
+        <width>44</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Валюта</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>250</y>
+        <width>41</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Сумма</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_count">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>350</y>
+        <width>93</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Посчитать</string>
+      </property>
      </widget>
     </widget>
    </widget>

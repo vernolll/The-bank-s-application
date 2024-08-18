@@ -1,4 +1,4 @@
-QT       += core gui sql charts network
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -23,6 +23,7 @@ INCLUDEPATH += C:\curl-8.9.1_1-win64-mingw\include
 
 SOURCES += \
     src/add_action.cpp \
+    src/converter.cpp \
     src/currencies.cpp \
     src/del_action.cpp \
     src/income_and_expenses.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
 
 HEADERS += \
     include/add_action.h \
+    include/converter.h \
     include/currencies.h \
     include/del_action.h \
     include/add_action.h \

@@ -13,7 +13,6 @@
 #include <QSqlQueryModel>
 #include <curl/curl.h>
 
-class MainWindow;
 
 namespace Ui
 {
@@ -26,10 +25,11 @@ class Currencies : public QObject
     Q_OBJECT
 public:
     Currencies(Ui::MainWindow *ui, QObject *parent = nullptr);
+    void open_currencies();
     ~Currencies();
 
 private slots:
-    void open_currencies();
+    void open();
     void back();
     void fetchData();
     void parseData(const QString &content);
@@ -40,7 +40,6 @@ private:
     Ui::MainWindow *ui;
     CURL *curl;
     QSqlDatabase db;
-    QSqlQuery query;
     QSqlTableModel *model;
 };
 
