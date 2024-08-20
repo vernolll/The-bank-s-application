@@ -17,12 +17,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 LIBS += -LC:\curl-8.9.1_1-win64-mingw\bin -lcurl
 LIBS += -LC:\curl-8.9.1_1-win64-mingw\lib -lcurl
+LIBS += -lcrypto
+LIBS += -lws2_32
 
 INCLUDEPATH += C:\curl-8.9.1_1-win64-mingw\include
 
 
 SOURCES += \
     src/add_action.cpp \
+    src/autorization.cpp \
     src/converter.cpp \
     src/currencies.cpp \
     src/del_action.cpp \
@@ -33,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     include/add_action.h \
+    include/autorization.h \
     include/converter.h \
     include/currencies.h \
     include/del_action.h \

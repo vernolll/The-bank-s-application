@@ -3,11 +3,8 @@
 
 #include <QDialog>
 #include <QDebug>
-#include <QSqlDatabase>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QMessageBox>
 #include <QDate>
+#include "include/autorization.h"
 
 
 namespace Ui {

@@ -1,6 +1,7 @@
 #include "include/del_action.h"
 #include "ui_del_action.h"
 
+
 Del_action::Del_action(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Del_action),
@@ -25,9 +26,18 @@ void Del_action::draw_table()
 {
     model = new QSqlTableModel();
     model->setTable("actions");
+    model->setFilter("username = '" + user +"'");
+
+    model->setHeaderData(0, Qt::Horizontal, "Дейтсвие");
+    model->setHeaderData(1, Qt::Horizontal, "Категория");
+    model->setHeaderData(2, Qt::Horizontal, "Деньги");
+    model->setHeaderData(3, Qt::Horizontal, "Дата");
+
     model->select();
 
     ui->tableView->setModel(model);
+    ui->tableView->setColumnWidth(3, 163);
+    ui->tableView->hideColumn(4);
     ui->tableView->show();
 }
 

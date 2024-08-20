@@ -1,6 +1,7 @@
 #include "include/add_action.h"
 #include "ui_add_action.h"
 
+
 add_action::add_action(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::add_action)
@@ -62,11 +63,12 @@ void add_action::add_info()
 
     if (money != 0 && !action.isEmpty() && !category.isEmpty())
     {
-        query.prepare("INSERT INTO Actions (Action, Category, Money, Date) VALUES (:act, :cat, :mon, :day)");
+        query.prepare("INSERT INTO Actions (Action, Category, Money, Date, username) VALUES (:act, :cat, :mon, :day, :user)");
         query.bindValue(":act", action);
         query.bindValue(":cat", category);
         query.bindValue(":mon", money);
         query.bindValue(":day", date);
+        query.bindValue(":user", user);
 
         if (query.exec())
         {
