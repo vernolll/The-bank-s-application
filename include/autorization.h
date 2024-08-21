@@ -42,6 +42,7 @@ private:
 
     bool isPasswordStrong(const QString &password);
     QString sha256(const QString& str);
+    bool check_if_exist(QString user, QString password);
 };
 
 #endif // AUTORIZATION_H

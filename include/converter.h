@@ -20,20 +20,22 @@ class Converter : public QObject
 {
     Q_OBJECT
 public:
-    Converter(Ui::MainWindow *ui, QObject *parent = nullptr);
+    explicit Converter(Ui::MainWindow *ui, QObject *parent = nullptr);
     ~Converter();
 
 private slots:
     void open_converter();
     void back_to_main();
-    void load_info();
     void get_info();
-    void counting(double money, double course1, double unit1, double course2, double unit2);
+
 
 private:
     Ui::MainWindow *ui;
     Currencies *curr;
     QSqlDatabase db;
+
+    void load_info();
+    void counting(double money, double course1, double unit1, double course2, double unit2);
 
 };
 

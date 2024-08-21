@@ -32,6 +32,7 @@ SOURCES += \
     src/income_and_expenses.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/news.cpp \
     src/qcustomplot.cpp
 
 HEADERS += \
@@ -44,7 +45,8 @@ HEADERS += \
     include/del_action.h \
     include/income_and_expenses.h \
     include/mainwindow.h \
-    include/qcustomplot.h \
+    include/news.h \
+    include/qcustomplot.h
 
 FORMS += \
     ui/add_action.ui \

@@ -10,11 +10,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     add_Database();
 
-    ui->stackedWidget->setCurrentWidget(ui->page_main);
+    ui->stackedWidget->setCurrentWidget(ui->page_autorization);
 
     inc_exp = new income_and_expenses(ui, db, this);
     curs = new Currencies(ui, this);
     conv = new Converter(ui, this);
+    autoriz = new Autorization(ui, this);
+    news = new News(ui, this);
 
     connect(this, SIGNAL(on_pushButton_balance_clicked()), inc_exp, SLOT(open_inc_exp()));
     connect(this, SIGNAL(on_pushButton_add_clicked()), inc_exp, SLOT(open_add_action()));
@@ -26,6 +28,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(on_pushButton_converter_clicked()), conv, SLOT(open_converter()));
     connect(this, SIGNAL(on_pushButton_back_3_clicked()), conv, SLOT(back_to_main()));
     connect(this, SIGNAL(on_pushButton_count_clicked()), conv, SLOT(get_info()));
+    connect(this, SIGNAL(on_pushButton_login_clicked()), autoriz, SLOT(autorizat()));
+    connect(this, SIGNAL(on_pushButton_regirstr_clicked()), autoriz, SLOT(registration()));
+    connect(this, SIGNAL(on_pushButton_regirstr_2_clicked()), autoriz, SLOT(new_person()));
+    connect(this, SIGNAL(on_pushButton_news_clicked()), news, SLOT(open_news()));
+    connect(this, SIGNAL(on_pushButton_back_4_clicked()), news, SLOT(back()));
 }
 
 
@@ -35,6 +42,8 @@ MainWindow::~MainWindow()
     delete inc_exp;
     delete curs;
     delete conv;
+    delete autoriz;
+    delete news;
 }
 
 
@@ -43,7 +52,8 @@ bool MainWindow::add_Database()
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("finance");
     db.setUserName("postgres");
-    db.setPassword("2k0a0r6AS");
+    QString password = qgetenv("PASSWORD.ENV");
+    db.setPassword(password);
 
     if (!db.open())
     {

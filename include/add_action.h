@@ -7,7 +7,8 @@
 #include "include/autorization.h"
 
 
-namespace Ui {
+namespace Ui
+{
 class add_action;
 }
 

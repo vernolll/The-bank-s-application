@@ -1,6 +1,7 @@
 #include "include/mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 income_and_expenses::income_and_expenses(Ui::MainWindow *ui, QSqlDatabase database, QObject *parent) :
     QObject(parent),
     ui(ui),
@@ -90,7 +91,6 @@ void income_and_expenses::draw_graph(QVector<QPair<QDate, double>> wallet)
 
 void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp)
 {
-    // Clear existing layout in diagram_incomes if required
     QLayout* existingLayout_inc = ui->diagram_incomes->layout();
     if (existingLayout_inc)
     {
@@ -193,7 +193,8 @@ void income_and_expenses::calculations()
 
     if (db.open())
     {
-        query.prepare("SELECT Money, Action, Date, Category FROM Actions");
+        query.prepare("SELECT Money, Action, Date, Category FROM Actions WHERE username = :user");
+        query.bindValue(":user", user);
         if(query.exec())
         {
             while (query.next())

@@ -12,6 +12,8 @@
 #include "include/add_action.h"
 #include "include/qcustomplot.h"
 #include "include/del_action.h"
+#include "include/autorization.h"
+
 
 class add_action;
 class Del_action;
@@ -34,18 +36,18 @@ public slots:
     void open_inc_exp();
     void back();
     void open_add_action();
-    void draw_graph(QVector<QPair<QDate, double>> wallet);
     void open_del_action();
     void calculations();
-    void draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp);
-
-
 
 private:
     Ui::MainWindow *ui;
     add_action *window_add;
     Del_action *window_del;
     QSqlDatabase db;
+
+    void draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp);
+    void draw_graph(QVector<QPair<QDate, double>> wallet);
+
 };
 
 #endif // INCOME_AND_EXPENSES_H

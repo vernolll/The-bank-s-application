@@ -7,11 +7,15 @@
 #include "include/income_and_expenses.h"
 #include "include/currencies.h"
 #include "include/converter.h"
+#include "include/autorization.h"
+#include "include/news.h"
 
 
 class income_and_expenses;
 class Currencies;
 class Converter;
+class Autorization;
+class News;
 
 
 QT_BEGIN_NAMESPACE
@@ -38,14 +42,19 @@ signals:
     void on_pushButton_converter_clicked();
     void on_pushButton_back_3_clicked();
     void on_pushButton_count_clicked();
+    void on_pushButton_login_clicked();
+    void on_pushButton_regirstr_clicked();
+    void on_pushButton_regirstr_2_clicked();
+    void on_pushButton_news_clicked();
+    void on_pushButton_back_4_clicked();
 
 private:
     Ui::MainWindow *ui;
     income_and_expenses *inc_exp;
     Currencies *curs;
     Converter *conv;
+    Autorization *autoriz;
+    News *news;
     QSqlDatabase db;
-
-
 };
 #endif // MAINWINDOW_H

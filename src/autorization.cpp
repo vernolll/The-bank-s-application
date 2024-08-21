@@ -107,42 +107,65 @@ void Autorization::autorizat()
 }
 
 
+bool Autorization::check_if_exist(QString user, QString password)
+{
+    qDebug() << "1";
+    QSqlQuery query(db);
+    query.prepare("SELECT * FROM users WHERE username = :user");
+    query.bindValue(":user", user);
+    if(query.exec() && query.next())
+    {
+        QMessageBox::warning(nullptr, "Ошибка", "Такой логин уже используется");
+        return true;
+    }
+
+    query.prepare("SELECT * FROM users WHERE password = :password");
+    query.bindValue(":password", password);
+    if(query.exec() && query.next())
+    {
+        QMessageBox::warning(nullptr, "Ошибка", "Пароль занят.");
+        return true;
+    }
+    return false;
+}
+
+
 void Autorization::new_person()
 {
     QSqlQuery query(db);
     if(!ui->lineEdit_login_2->text().isEmpty() && !ui->lineEdit_password_2->text().isEmpty())
     {
-        qDebug() << "4";
         QString login = ui->lineEdit_login_2->text();
         QString password = ui->lineEdit_password_2->text();
 
         if (!isPasswordStrong(password))
         {
-            qDebug() << "1";
             QMessageBox::warning(nullptr, "Ненадежный пароль", "Пароль должен содержать не менее 8 символов и состоять из прописных и строчных букв, цифр и специальных символов.", QMessageBox::Ok);
             qDebug() << "Ненадежный пароль";
             return;
         }
 
-        query.prepare("INSERT INTO Users (username, password) VALUES (:log, :pas)");
-        query.bindValue(":log", login);
-        query.bindValue(":pas", sha256(password));
-
-        if (!query.exec())
+        if(login.length() < 8)
         {
-            qDebug() << "1";
-            qDebug() << "Error executing query:" << query.lastError().text();
+            QMessageBox::warning(nullptr, "Короткий логин", "Логин должен содержать не менее 8 символов.");
+            return;
         }
-        else
+
+        if(!check_if_exist(login, sha256(password)))
         {
-            qDebug() << "3";
-            qDebug() << "User registered successfully!";
+            query.prepare("INSERT INTO Users (username, password) VALUES (:log, :pas)");
+            query.bindValue(":log", login);
+            query.bindValue(":pas", sha256(password));
 
-            qDebug() << sha256(password);
-
-
-
-            ui->stackedWidget->setCurrentWidget(ui->page_autorization);
+            if (!query.exec())
+            {
+                qDebug() << "Error executing query:" << query.lastError().text();
+            }
+            else
+            {
+                qDebug() << "User registered successfully!";
+                ui->stackedWidget->setCurrentWidget(ui->page_autorization);
+            }
         }
     }
 }

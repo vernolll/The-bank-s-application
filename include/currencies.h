@@ -31,9 +31,6 @@ public:
 private slots:
     void open();
     void back();
-    void fetchData();
-    void parseData(const QString &content);
-    void draw_table();
     void searching();
 
 private:
@@ -41,6 +38,10 @@ private:
     CURL *curl;
     QSqlDatabase db;
     QSqlTableModel *model;
+
+    void fetchData();
+    void parseData(const QString &content);
+    void draw_table();
 };
 
 #endif // CURRENCIES_H
