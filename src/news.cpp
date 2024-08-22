@@ -19,6 +19,11 @@ void News::open_news()
     CURL *curl;
     CURLcode res;
 
+    QSqlQuery query;
+    query.exec("DROP TABLE IF EXISTS news");
+    query.exec("CREATE TABLE news (news TEXT, url TEXT)");
+
+
     curl = curl_easy_init();
 
     if(curl)
@@ -42,6 +47,8 @@ void News::open_news()
         }
 
         curl_easy_cleanup(curl);
+
+        draw_table();
     }
     else
     {
@@ -54,17 +61,27 @@ size_t News::WriteCallback(void *contents, size_t size, size_t nmemb)
 {
     QString htmlContent = QString::fromUtf8(static_cast<char*>(contents), size * nmemb);
 
-    QRegularExpression regex(R"(<a[^>]*>([^<]+)</a>)");
+    QRegularExpression regex("href=\"([^\"]+)\"\\s*>\\s*([^<]+)<\\/a>");
     QRegularExpressionMatchIterator matchIterator = regex.globalMatch(htmlContent);
+
+    QSqlQuery query;
 
     while (matchIterator.hasNext())
     {
         QRegularExpressionMatch match = matchIterator.next();
-        QString articleTitle = match.captured(1);
+        QString link = "https://www.banki.ru" + match.captured(1);
+        QString articleTitle = match.captured(2);
         articleTitle.remove(QRegExp("[\n\t]"));
-        qDebug() << "Article Title: " << articleTitle;
-    }
 
+        query.prepare("INSERT INTO news (news, url) VALUES (:news, :url)");
+        query.bindValue(":news", articleTitle);
+        query.bindValue(":url", link);
+
+        if (!query.exec())
+        {
+            qDebug() << "Error inserting data into news table: " << query.lastError().text();
+        }
+    }
 
     return size * nmemb;
 }
@@ -73,4 +90,33 @@ size_t News::WriteCallback(void *contents, size_t size, size_t nmemb)
 void News::back()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_main);
+}
+
+
+void News::draw_table()
+{
+    QStandardItemModel *model = new QStandardItemModel();
+    model->setColumnCount(1);
+    model->setHeaderData(0, Qt::Horizontal, "Новости");
+
+    QSqlQuery query;
+    query.exec("SELECT news FROM news");
+
+    int row = 0;
+    while (query.next())
+    {
+        QString newsText = query.value(0).toString();
+        QStandardItem *item = new QStandardItem(newsText);
+        item->setTextAlignment(Qt::AlignCenter);
+        model->setItem(row, 0, item);
+        row++;
+    }
+
+    ui->tableView_news->setModel(model);
+    ui->tableView_news->setColumnWidth(0, 750);
+    ui->tableView_news->verticalHeader()->hide();
+    ui->tableView_news->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    ui->tableView_news->show();
+
 }

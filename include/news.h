@@ -6,6 +6,9 @@
 #include <QWidget>
 #include "ui_mainwindow.h"
 #include <curl/curl.h>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlTableModel>
 
 
 namespace Ui
@@ -29,7 +32,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QSqlTableModel *model;
 
+    void draw_table();
 
 };
 

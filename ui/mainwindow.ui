@@ -558,14 +558,24 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButton_back_4">
       <property name="geometry">
        <rect>
-        <x>680</x>
-        <y>500</y>
+        <x>690</x>
+        <y>510</y>
         <width>80</width>
         <height>25</height>
        </rect>
       </property>
       <property name="text">
        <string>Назад</string>
+      </property>
+     </widget>
+     <widget class="QTableView" name="tableView_news">
+      <property name="geometry">
+       <rect>
+        <x>25</x>
+        <y>11</y>
+        <width>751</width>
+        <height>491</height>
+       </rect>
       </property>
      </widget>
     </widget>
