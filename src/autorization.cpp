@@ -109,8 +109,8 @@ void Autorization::autorizat()
 
 bool Autorization::check_if_exist(QString user, QString password)
 {
-    qDebug() << "1";
     QSqlQuery query(db);
+    query.prepare("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT)");
     query.prepare("SELECT * FROM users WHERE username = :user");
     query.bindValue(":user", user);
     if(query.exec() && query.next())

@@ -23,6 +23,45 @@ add_action::~add_action()
 bool add_action::connect_info()
 {
     QSqlQuery query(db);
+
+    query.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Categories'");
+    query.exec();
+
+    if (!query.next())
+    {
+        QVector<QPair<QString, QString>> categories =
+        {
+            qMakePair<QString, QString>("Доходы", "Зарплата"),
+            qMakePair<QString, QString>("Доходы", "Перевод"),
+            qMakePair<QString, QString>("Доходы", "Пенсия"),
+            qMakePair<QString, QString>("Доходы", "Гонорар"),
+            qMakePair<QString, QString>("Доходы", "Премия"),
+            qMakePair<QString, QString>("Доходы", "Пособие"),
+            qMakePair<QString, QString>("Расходы", "Продукты"),
+            qMakePair<QString, QString>("Расходы", "Развлечения"),
+            qMakePair<QString, QString>("Расходы", "Здоровье"),
+            qMakePair<QString, QString>("Расходы", "Образование"),
+            qMakePair<QString, QString>("Расходы", "Транспорт"),
+            qMakePair<QString, QString>("Расходы", "Налоги"),
+            qMakePair<QString, QString>("Расходы", "Одежда"),
+            qMakePair<QString, QString>("Расходы", "Автомобиль"),
+            qMakePair<QString, QString>("Расходы", "Питомцы"),
+            qMakePair<QString, QString>("Расходы", "Страхование"),
+            qMakePair<QString, QString>("Расходы", "Красота"),
+            qMakePair<QString, QString>("Расходы", "Ребенок"),
+            qMakePair<QString, QString>("Расходы", "Покупка")
+        };
+
+        for (const auto &pair : categories)
+        {
+            query.exec("CREATE TABLE Categories (action TEXT, category TEXT)");
+            query.prepare("INSERT INTO Categories (action, category) VALUES (:action, :category)");
+            query.bindValue(":action", pair.first);
+            query.bindValue(":category", pair.second);
+            query.exec();
+        }
+    }
+
     query.prepare("SELECT Action, Category FROM Categories WHERE action = 'Доходы'");
     query.exec();
     while (query.next())

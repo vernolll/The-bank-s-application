@@ -25,8 +25,10 @@ INCLUDEPATH += C:\curl-8.9.1_1-win64-mingw\include
 
 SOURCES += \
     src/add_action.cpp \
+    src/add_rate.cpp \
     src/autorization.cpp \
     src/converter.cpp \
+    src/credit.cpp \
     src/currencies.cpp \
     src/del_action.cpp \
     src/income_and_expenses.cpp \
@@ -37,8 +39,10 @@ SOURCES += \
 
 HEADERS += \
     include/add_action.h \
+    include/add_rate.h \
     include/autorization.h \
     include/converter.h \
+    include/credit.h \
     include/currencies.h \
     include/del_action.h \
     include/add_action.h \
@@ -50,6 +54,7 @@ HEADERS += \
 
 FORMS += \
     ui/add_action.ui \
+    ui/add_rate.ui \
     ui/del_action.ui \
     ui/mainwindow.ui
 

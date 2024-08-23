@@ -7,6 +7,7 @@ Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
     curl(nullptr),
     model(nullptr)
 {
+    searchModel = new QSqlQueryModel();
 }
 
 
@@ -14,9 +15,16 @@ Currencies::~Currencies()
 {
     if (curl)
     {
-        curl_easy_cleanup(curl);  // Clean up curl when the object is destroyed
+        curl_easy_cleanup(curl);
     }
-    delete model;
+    if (model)
+    {
+        delete model;
+    }
+    if (searchModel)
+    {
+        delete searchModel;
+    }
 }
 
 
@@ -29,12 +37,9 @@ void Currencies::open()
 
 void Currencies::open_currencies()
 {
-
-    // Initialize curl and check if successful
     curl = curl_easy_init();
     if (curl)
     {
-        // Set SSL options in the constructor
         curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/ssl/certs/ca-certificates.crt");
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -54,7 +59,6 @@ void Currencies::back()
 }
 
 
-// Callback function for curl to store the response
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
     QByteArray *data = reinterpret_cast<QByteArray*>(userp);
@@ -67,16 +71,13 @@ void Currencies::fetchData()
 {
     if (curl)
     {
-        QByteArray response; // Use QByteArray
+        QByteArray response;
 
-        // Set URL
         curl_easy_setopt(curl, CURLOPT_URL, "https://cbr.ru/currency_base/daily/");
 
-        // Set callback for writing data
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
-        // Perform the request
         CURLcode res = curl_easy_perform(curl);
         if (res != CURLE_OK)
         {
@@ -162,7 +163,12 @@ void Currencies::searching()
 
     if (query.exec())
     {
-        QSqlQueryModel *searchModel = new QSqlQueryModel();
+        if (searchModel)
+        {
+            delete searchModel;
+        }
+
+        searchModel = new QSqlQueryModel();
         searchModel->setQuery(query);
 
         searchModel->setHeaderData(0, Qt::Horizontal, "Цифр.Код");

@@ -193,6 +193,7 @@ void income_and_expenses::calculations()
 
     if (db.open())
     {
+        query.exec("CREATE TABLE IF NOT EXISTS Actions (Action TEXT, Category TEXT, Money REAL, Date DATE, username TEXT");
         query.prepare("SELECT Money, Action, Date, Category FROM Actions WHERE username = :user");
         query.bindValue(":user", user);
         if(query.exec())

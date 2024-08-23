@@ -38,6 +38,7 @@ private:
     CURL *curl;
     QSqlDatabase db;
     QSqlTableModel *model;
+    QSqlQueryModel *searchModel;
 
     void fetchData();
     void parseData(const QString &content);

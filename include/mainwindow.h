@@ -9,6 +9,7 @@
 #include "include/converter.h"
 #include "include/autorization.h"
 #include "include/news.h"
+#include "include/credit.h"
 
 
 class income_and_expenses;
@@ -16,6 +17,7 @@ class Currencies;
 class Converter;
 class Autorization;
 class News;
+class Credit;
 
 
 QT_BEGIN_NAMESPACE
@@ -47,6 +49,10 @@ signals:
     void on_pushButton_regirstr_2_clicked();
     void on_pushButton_news_clicked();
     void on_pushButton_back_4_clicked();
+    void on_tableView_news_clicked(const QModelIndex &index);
+    void on_pushButton_credit_clicked();
+    void on_pushButton_back_5_clicked();
+    void on_pushButton_count_2_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -55,6 +61,7 @@ private:
     Converter *conv;
     Autorization *autoriz;
     News *news;
+    Credit *credit;
     QSqlDatabase db;
 };
 #endif // MAINWINDOW_H

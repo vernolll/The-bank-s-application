@@ -4,11 +4,15 @@ News::News(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
     ui(ui)
 {
+    curl = curl_easy_init();
+    model = new QStandardItemModel();
 }
 
 
 News::~News()
 {
+    delete model;
+    curl_easy_cleanup(curl);
 }
 
 
@@ -16,15 +20,11 @@ void News::open_news()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_news);
 
-    CURL *curl;
     CURLcode res;
 
     QSqlQuery query;
     query.exec("DROP TABLE IF EXISTS news");
     query.exec("CREATE TABLE news (news TEXT, url TEXT)");
-
-
-    curl = curl_easy_init();
 
     if(curl)
     {
@@ -95,7 +95,12 @@ void News::back()
 
 void News::draw_table()
 {
-    QStandardItemModel *model = new QStandardItemModel();
+
+    if (ui->tableView_news->model() != nullptr)
+    {
+        delete ui->tableView_news->model();
+    }
+
     model->setColumnCount(1);
     model->setHeaderData(0, Qt::Horizontal, "Новости");
 
@@ -118,5 +123,22 @@ void News::draw_table()
     ui->tableView_news->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->tableView_news->show();
+}
 
+
+void News::open_site(const QModelIndex &index)
+{
+    if (index.isValid())
+    {
+        QSqlQuery query;
+        query.prepare("SELECT url FROM news LIMIT 1 OFFSET :rowIndex");
+        query.bindValue(":rowIndex", index.row());
+
+        if (query.exec() && query.first())
+        {
+            QString url = query.value(0).toString();
+            QUrl qurl(url);
+            QDesktopServices::openUrl(qurl);
+        }
+    }
 }

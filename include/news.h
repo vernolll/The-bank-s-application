@@ -29,10 +29,12 @@ private slots:
     void open_news();
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb);
     void back();
+    void open_site(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;
-    QSqlTableModel *model;
+    QStandardItemModel *model;
+    CURL *curl;
 
     void draw_table();
 

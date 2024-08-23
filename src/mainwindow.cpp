@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     conv = new Converter(ui, this);
     autoriz = new Autorization(ui, this);
     news = new News(ui, this);
+    credit = new Credit(ui, this);
 
     connect(this, SIGNAL(on_pushButton_balance_clicked()), inc_exp, SLOT(open_inc_exp()));
     connect(this, SIGNAL(on_pushButton_add_clicked()), inc_exp, SLOT(open_add_action()));
@@ -33,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(on_pushButton_regirstr_2_clicked()), autoriz, SLOT(new_person()));
     connect(this, SIGNAL(on_pushButton_news_clicked()), news, SLOT(open_news()));
     connect(this, SIGNAL(on_pushButton_back_4_clicked()), news, SLOT(back()));
+    connect(this, SIGNAL(on_tableView_news_clicked(const QModelIndex &)), news, SLOT(open_site(const QModelIndex &)));
+    connect(this, SIGNAL(on_pushButton_credit_clicked()), credit, SLOT(open_calculator()));
+    connect(this, SIGNAL(on_pushButton_back_5_clicked()), credit, SLOT(back()));
+    connect(this, SIGNAL(on_pushButton_count_2_clicked()), credit, SLOT(get_info()));
 }
 
 
@@ -50,6 +55,7 @@ MainWindow::~MainWindow()
 bool MainWindow::add_Database()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
+     db.setHostName("localhost");
     db.setDatabaseName("finance");
     db.setUserName("postgres");
     QString password = qgetenv("PASSWORD.ENV");
@@ -58,7 +64,25 @@ bool MainWindow::add_Database()
     if (!db.open())
     {
         qDebug() << "Error: Unable to open database" << db.lastError().text();
-        return false;
+        db.setDatabaseName("postgres");
+        if (db.open())
+        {
+            QSqlQuery query(db);
+            query.exec("CREATE DATABASE finance");
+            qDebug() << "Database 'finance' created successfully.";
+        }
+        else
+        {
+            qDebug() << "Error: Unable to connect to 'postgres' database";
+            return false;
+        }
+
+        db.setDatabaseName("finance");
+        if (!db.open())
+        {
+            qDebug() << "Error: Unable to open database 'finance'" << db.lastError().text();
+            return false;
+        }
     }
 
     qDebug() << "Database connected successfully.";
