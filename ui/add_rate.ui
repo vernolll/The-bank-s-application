@@ -150,7 +150,7 @@
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>180</x>
        <y>200</y>
        <width>41</width>
        <height>16</height>
@@ -186,7 +186,7 @@
       <string>Подтвердить</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>

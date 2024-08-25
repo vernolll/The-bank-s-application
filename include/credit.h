@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QMessageBox>
 #include "ui_mainwindow.h"
 #include "include/add_rate.h"
 
