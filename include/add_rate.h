@@ -6,10 +6,14 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QMessageBox>
-#include <QSqlTableModel>
 #include <cmath>
+#include <QSqlTableModel>
+#include "include/credit.h"
 
-namespace Ui {
+class Credit;
+
+namespace Ui
+{
 class Add_rate;
 }
 
@@ -18,7 +22,7 @@ class Add_rate : public QDialog
     Q_OBJECT
 
 public:
-    explicit Add_rate(QWidget *parent = nullptr);
+    explicit Add_rate(QWidget *parent = nullptr, Credit *credit = nullptr);
     void open_fixed();
     void open_changed();
     ~Add_rate();
@@ -36,6 +40,7 @@ private slots:
 private:
     Ui::Add_rate *ui;
     QSqlTableModel *model;
+    Credit *credit;
 
     void draw_table();
     void calculation();

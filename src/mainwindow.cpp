@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(on_pushButton_credit_clicked()), credit, SLOT(open_calculator()));
     connect(this, SIGNAL(on_pushButton_back_5_clicked()), credit, SLOT(back()));
     connect(this, SIGNAL(on_pushButton_count_2_clicked()), credit, SLOT(get_info()));
+    connect(this, SIGNAL(on_pushButton_back_6_clicked()), credit, SLOT(back_to_credit()));
 }
 
 

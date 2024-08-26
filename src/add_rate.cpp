@@ -1,9 +1,10 @@
 #include "include/add_rate.h"
 #include "ui_add_rate.h"
 
-Add_rate::Add_rate(QWidget *parent) :
+Add_rate::Add_rate(QWidget *parent, Credit *credit) :
     QDialog(parent),
-    ui(new Ui::Add_rate)
+    ui(new Ui::Add_rate),
+    credit(credit)
 {
     ui->setupUi(this);
     setWindowTitle("Мои финансы");
@@ -19,6 +20,7 @@ Add_rate::~Add_rate()
 {
     delete ui;
     delete model;
+    delete credit;
 }
 
 
@@ -271,33 +273,35 @@ void Add_rate::calculation()
                     // Calculate duration for the last period
                     QDate lastStartDate = date_v[i - 1];
                     QDate endDate = date_v[i];
-                    duration = lastStartDate.daysTo(endDate) / 30; // Assuming each month has 30 days
+                    duration = lastStartDate.daysTo(endDate) / 30;
                 }
-
-                // Calculate monthly payment
-                double monthlyPayment = (money / percent_v.size() * currentRate * pow(1 + currentRate, duration)) / (pow(1 + currentRate, duration) - 1);
-                qDebug() << "Monthly payment for period " << i + 1 << ": " << monthlyPayment;
-
-                totalPayment += monthlyPayment; // Accumulate total payment
 
                 double remainingBalance = money;
+                double monthlyPayment = 0.0;
+
+                // Calculate monthly payment for the period using the annuity formula
+                monthlyPayment = (money * currentRate * pow(1 + currentRate, duration)) / (pow(1 + currentRate, duration) - 1);
+                qDebug() << "Monthly payment for period " << i + 1 << ": " << monthlyPayment;
+
+                totalPayment += monthlyPayment;
+
                 for (int month = 0; month < duration; month++)
                 {
-                    double interestPayment = remainingBalance * currentRate;
-                    double principalPayment = monthlyPayment - interestPayment;
-                    double updatedBalance = remainingBalance - principalPayment;
-
                     QSqlQuery insertQuery;
-                    insertQuery.prepare("INSERT INTO payment_details (date, before, after, payment) VALUES (?, ?, ?, ?)");
+                    insertQuery.prepare("INSERT INTO payment_details (date, before, after, payment, after_pay) VALUES (?, ?, ?, ?, ?)");
                     insertQuery.addBindValue(date_v[i].addMonths(month));
                     insertQuery.addBindValue(remainingBalance);
-                    insertQuery.addBindValue(updatedBalance);
+                    double interestPayment = remainingBalance * currentRate;
+                    insertQuery.addBindValue(remainingBalance + interestPayment);
                     insertQuery.addBindValue(monthlyPayment);
+                    insertQuery.addBindValue(remainingBalance + interestPayment - monthlyPayment);
                     insertQuery.exec();
 
-                    remainingBalance = updatedBalance;
+                    remainingBalance = remainingBalance + interestPayment - monthlyPayment;
                 }
             }
+
+            qDebug() << "Total payment for all periods: " << totalPayment;
 
         }
     }
@@ -397,5 +401,6 @@ void Add_rate::calculation()
             qDebug() << "Средний платеж по дифференцированному кредиту:" << result / monthsPassed;
         }
     }
+    credit->to_report();
 }
 

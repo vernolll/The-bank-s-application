@@ -4,13 +4,15 @@ Credit::Credit(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
     ui(ui)
 {
-    add_rate = new Add_rate();
+    model = new QSqlTableModel();
+    add_rate = new Add_rate(nullptr, this);
 }
 
 
 Credit::~Credit()
 {
-    delete add_rate;
+    add_rate = nullptr;
+    delete model;
 }
 
 
@@ -70,4 +72,29 @@ void Credit::get_info()
     {
         QMessageBox::warning(nullptr, "Ошибка", "Заполните все поля правильно.");
     }
+}
+
+
+void Credit::back_to_credit()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_credit);
+}
+
+
+void Credit::to_report()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_report);
+
+    model->setTable("payment_details");
+
+    model->setHeaderData(0, Qt::Horizontal, "Дата платежа");
+    model->setHeaderData(1, Qt::Horizontal, "До %");
+    model->setHeaderData(2, Qt::Horizontal, "После %");
+    model->setHeaderData(3, Qt::Horizontal, "Платеж");
+    model->setHeaderData(4, Qt::Horizontal, "После платежа");
+
+    model->select();
+
+    ui->tableView_credit->setModel(model);
+    ui->tableView_credit->show();
 }

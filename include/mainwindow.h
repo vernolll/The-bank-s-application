@@ -53,6 +53,7 @@ signals:
     void on_pushButton_credit_clicked();
     void on_pushButton_back_5_clicked();
     void on_pushButton_count_2_clicked();
+    void on_pushButton_back_6_clicked();
 
 private:
     Ui::MainWindow *ui;
