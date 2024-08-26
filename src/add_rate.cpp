@@ -93,7 +93,7 @@ void Add_rate::add_changed()
     query.exec("SELECT time, year_or_month, date FROM credit");
     while(query.next())
     {
-        time = query.value(0).toInt();
+        time = query.value(0).toInt() - 1;
         info = query.value(1).toString();
         start_date = query.value(2).toDate();
     }
@@ -149,8 +149,18 @@ void Add_rate::calculation()
     QVector<QString> rate_v;
     QVector<double> percent_v;
     QVector<QDate> date_v;
+    double before, after;
 
     QSqlQuery query;
+
+    // Create/Modify the database table for payment details
+    query.exec("DROP TABLE IF EXISTS payment_details");
+    query.exec("CREATE TABLE payment_details ("
+                "date DATE, "
+                "before DECIMAL(20, 7), "
+                "after DECIMAL(20, 7), "
+                "payment DECIMAL(20, 7),"
+                "after_pay DECIMAL(20, 7))");
 
     query.exec("SELECT money, time, year_or_month, date, payment, type FROM credit");
     while(query.next())
@@ -183,7 +193,115 @@ void Add_rate::calculation()
         }
     }
 
+    before = money;
+
     if(payment_type == "Аннуитетные")
+    {
+        if(type == "Фиксированная")
+        {
+
+            // Convert to decimal
+            if (percent == "% в месяц")
+            {
+                rate = rate / 100;
+            }
+            else if (percent == "% в год")
+            {
+                rate = (rate / 100) / 12;
+            }
+
+            if(month_or_year == "лет")
+            {
+                time = time * 12;
+            }
+
+            if (rate > 0)
+            {
+                payment = (money * rate * pow(1 + rate, time)) / (pow(1 + rate, time) - 1);
+            }
+            else
+            {
+                payment = money / time;
+            }
+
+            qDebug() << "Фиксированный аннуитетный месячный платеж: " << payment;
+
+            for(int month = 0; month <= time - 1; month++)
+            {
+
+                after = before * (rate + 1);
+                QSqlQuery insertQuery;
+                insertQuery.prepare("INSERT INTO payment_details (date, before, after, payment, after_pay) VALUES (?, ?, ?, ?, ?)");
+                insertQuery.addBindValue(date.addMonths(month));
+                insertQuery.addBindValue(before);
+                insertQuery.addBindValue(after);
+                insertQuery.addBindValue(payment);
+                before = after - payment;
+                insertQuery.addBindValue(before);
+                insertQuery.exec();
+            }
+        }
+        else
+        {
+            double totalPayment = 0.0; // Initialize total payment
+
+            for (int i = 0; i < percent_v.size(); i++)
+            {
+                double currentRate = percent_v[i];
+
+                if (rate_v[i] == "% в месяц")
+                {
+                    currentRate /= 100;
+                }
+                else if (rate_v[i] == "% в год")
+                {
+                    currentRate = (currentRate / 100) / 12;
+                }
+
+                int duration = 0;
+                if (i < percent_v.size() - 1)
+                {
+                    // Calculate duration based on start and end dates
+                    QDate startDate = date_v[i];
+                    QDate endDate = date_v[i + 1];
+                    duration = startDate.daysTo(endDate) / 30; // Assuming each month has 30 days
+                }
+                else
+                {
+                    // Calculate duration for the last period
+                    QDate lastStartDate = date_v[i - 1];
+                    QDate endDate = date_v[i];
+                    duration = lastStartDate.daysTo(endDate) / 30; // Assuming each month has 30 days
+                }
+
+                // Calculate monthly payment
+                double monthlyPayment = (money / percent_v.size() * currentRate * pow(1 + currentRate, duration)) / (pow(1 + currentRate, duration) - 1);
+                qDebug() << "Monthly payment for period " << i + 1 << ": " << monthlyPayment;
+
+                totalPayment += monthlyPayment; // Accumulate total payment
+
+                double remainingBalance = money;
+                for (int month = 0; month < duration; month++)
+                {
+                    double interestPayment = remainingBalance * currentRate;
+                    double principalPayment = monthlyPayment - interestPayment;
+                    double updatedBalance = remainingBalance - principalPayment;
+
+                    QSqlQuery insertQuery;
+                    insertQuery.prepare("INSERT INTO payment_details (date, before, after, payment) VALUES (?, ?, ?, ?)");
+                    insertQuery.addBindValue(date_v[i].addMonths(month));
+                    insertQuery.addBindValue(remainingBalance);
+                    insertQuery.addBindValue(updatedBalance);
+                    insertQuery.addBindValue(monthlyPayment);
+                    insertQuery.exec();
+
+                    remainingBalance = updatedBalance;
+                }
+            }
+
+        }
+    }
+    else if (payment_type == "Дифференцированные")
     {
         if(type == "Фиксированная")
         {
@@ -204,21 +322,34 @@ void Add_rate::calculation()
                 time = time * 12;
             }
 
-            if (rate > 0)
+            double principalPayment = money / time;
+            double totalPayment = 0.0;
+
+            for (int i = 1; i <= time; ++i)
             {
-                payment = (money * rate) / (1 - pow(1 + rate, -time));
-            }
-            else
-            {
-                payment = money / time;
+                double interestPayment = (money - (principalPayment * (i - 1))) * rate;
+                payment = principalPayment + interestPayment;
+                totalPayment += payment;
+
+                QSqlQuery query;
+                query.prepare("INSERT INTO payment_details (date, before, after, payment, after_pay) VALUES (:date, :before, :after, :payment, :after_pay)");
+                query.bindValue(":date", date.addMonths(i - 1).toString("yyyy-MM-dd"));
+                query.bindValue(":before", money - (principalPayment * (i - 1)));
+                query.bindValue(":after", (money - (principalPayment * (i - 1))) * (1 + rate));
+                query.bindValue(":payment", payment);
+                query.bindValue(":after_pay", (money - (principalPayment * (i - 1))) * (1 + rate) - payment);
+                query.exec();
+
+                qDebug() << "Дифференцированный платеж за месяц:" << i << ": " << payment;
             }
 
-            qDebug() << "Фиксированный аннуитетный месячный платеж: " << payment;
+            qDebug() << "Средний платеж: " << totalPayment / time;
         }
         else
         {
+            // Implement differentiated payment calculation for variable rates similarly
             double segmentPayment = 0.0, result = 0.0;
-            int monthsPassed = 0, k = 0;
+            int monthsPassed = 0;
 
             for (int i = 0; i < percent_v.size(); ++i)
             {
@@ -244,7 +375,7 @@ void Add_rate::calculation()
                 }
                 else
                 {
-                    QDate lastStartDate = date_v[i-1];
+                    QDate lastStartDate = date_v[i - 1];
                     QDate endDate = date_v[i];
                     int lastStartMonths = lastStartDate.year() * 12 + lastStartDate.month();
                     int endMonths = endDate.year() * 12 + endDate.month();
@@ -252,22 +383,19 @@ void Add_rate::calculation()
                 }
 
                 monthsPassed += duration;
+                double principalPayment = money / percent_v.size();
 
-                if (currentRate > 0)
+                for (int j = 1; j <= duration; ++j)
                 {
-                    segmentPayment = ((money / percent_v.size()) * currentRate) / (1 - pow(1 + currentRate, -duration));
+                    double interestPayment = (money - (principalPayment * (monthsPassed - duration))) * currentRate;
+                    segmentPayment = principalPayment + interestPayment;
+                    qDebug() << "Дифференцированный платеж:" << segmentPayment;
+                    result += segmentPayment;
                 }
-                else
-                {
-                    segmentPayment = money/duration;
-                }
-
-                qDebug() << "Средний квартальный платеж:" << i + 1 << ": " << segmentPayment;
-                k += 1;
-                result += segmentPayment;
             }
 
-            qDebug() << "Средний платеж:" << result/k;
+            qDebug() << "Средний платеж по дифференцированному кредиту:" << result / monthsPassed;
         }
     }
 }
+

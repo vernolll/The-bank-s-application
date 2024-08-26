@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     add_Database();
 
-    ui->stackedWidget->setCurrentWidget(ui->page_autorization);
+    ui->stackedWidget->setCurrentWidget(ui->page_credit);
 
     inc_exp = new income_and_expenses(ui, db, this);
     curs = new Currencies(ui, this);
