@@ -12,6 +12,23 @@
 class Add_rate;
 
 
+class CustomDelegate : public QStyledItemDelegate
+{
+public:
+    CustomDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    QString displayText(const QVariant &value, const QLocale &locale) const override
+    {
+        if (value.type() == QVariant::Int || value.type() == QVariant::Double)
+        {
+            // Format the number with two decimal places and without grouping
+            return locale.toString(value.toDouble(), 'f', 2);
+        }
+        return QStyledItemDelegate::displayText(value, locale);
+    }
+};
+
+
 namespace Ui
 {
 class MainWindow;
@@ -39,5 +56,6 @@ private:
     Add_rate *add_rate;
     QSqlTableModel *model;
 };
+
 
 #endif // CREDIT_H

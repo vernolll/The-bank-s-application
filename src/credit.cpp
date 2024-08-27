@@ -1,5 +1,7 @@
 #include "include/credit.h"
 
+
+
 Credit::Credit(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
     ui(ui)
@@ -96,5 +98,40 @@ void Credit::to_report()
     model->select();
 
     ui->tableView_credit->setModel(model);
+    ui->tableView_credit->setColumnWidth(4, 200);
+    CustomDelegate *delegate = new CustomDelegate();
+    ui->tableView_credit->setItemDelegateForColumn(4, delegate);
+    ui->tableView_credit->setItemDelegateForColumn(3, delegate);
+    ui->tableView_credit->setItemDelegateForColumn(2, delegate);
+    ui->tableView_credit->setItemDelegateForColumn(1, delegate);
+
     ui->tableView_credit->show();
+
+    double average = 0.0, overpay = 0.0, money;
+    QVector<double> pay;
+    QSqlQuery query;
+    query.exec("SELECT payment FROM payment_details");
+    while(query.next())
+    {
+        pay += query.value(0).toDouble();
+    }
+
+    for(int i = 0; i < pay.size(); i++)
+    {
+        average += pay[i];
+    }
+
+    query.exec("SELECT money FROM credit");
+    while(query.next())
+    {
+        money = query.value(0).toDouble();
+    }
+    overpay = average - money;
+    average /= pay.size();
+
+    QString averageText = QString::number(average, 'f', 2);
+    QString overpayText = QString::number(overpay, 'f', 2);
+
+    ui->label_average->setText(averageText);
+    ui->label_overpayment->setText(overpayText);
 }

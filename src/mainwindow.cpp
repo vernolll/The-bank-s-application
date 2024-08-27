@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     add_Database();
 
-    ui->stackedWidget->setCurrentWidget(ui->page_credit);
+    ui->stackedWidget->setCurrentWidget(ui->page_autorization);
 
     inc_exp = new income_and_expenses(ui, db, this);
     curs = new Currencies(ui, this);
@@ -50,6 +50,7 @@ MainWindow::~MainWindow()
     delete conv;
     delete autoriz;
     delete news;
+    db.close();
 }
 
 

@@ -799,7 +799,7 @@ p, li { white-space: pre-wrap; }
         <x>25</x>
         <y>11</y>
         <width>751</width>
-        <height>511</height>
+        <height>401</height>
        </rect>
       </property>
      </widget>
@@ -815,6 +815,58 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Назад</string>
       </property>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>450</y>
+        <width>275</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>Средний платеж:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_average">
+         <property name="text">
+          <string>                                         </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>480</y>
+        <width>276</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>Переплата:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_overpayment">
+         <property name="text">
+          <string>                                                  </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </widget>
