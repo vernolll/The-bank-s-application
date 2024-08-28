@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QMessageBox>
+#include <QSqlDatabase>
 #include "ui_mainwindow.h"
 #include "include/add_rate.h"
 #include <QSqlTableModel>
@@ -21,7 +22,6 @@ public:
     {
         if (value.type() == QVariant::Int || value.type() == QVariant::Double)
         {
-            // Format the number with two decimal places and without grouping
             return locale.toString(value.toDouble(), 'f', 2);
         }
         return QStyledItemDelegate::displayText(value, locale);
@@ -55,6 +55,7 @@ private:
     Ui::MainWindow *ui;
     Add_rate *add_rate;
     QSqlTableModel *model;
+    QSqlDatabase db;
 };
 
 

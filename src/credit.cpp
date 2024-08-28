@@ -43,7 +43,7 @@ void Credit::get_info()
     QString payment = ui->comboBox_payments->currentText();
     QString y_or_m = ui->comboBox_month->currentText();
 
-    if(money != NULL && time != NULL && !day.isNull() && rate != NULL && payment != NULL && y_or_m != NULL)
+    if(money != 0.0 && time != 0 && !day.isNull() && !rate.isEmpty() && !payment.isEmpty() && !y_or_m.isEmpty())
     {
         query.exec("CREATE TABLE credit (money REAL, time INT, year_or_month TEXT, date DATE, payment TEXT, type TEXT)");
         query.prepare("INSERT INTO credit (money, time, year_or_month, date, payment, type) VALUES (:money, :time, :year_or_month, :date, :payment, :type)");

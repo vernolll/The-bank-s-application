@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <cmath>
 #include <QSqlTableModel>
+#include <QSqlDatabase>
 #include "include/credit.h"
 
 class Credit;
@@ -41,6 +42,7 @@ private:
     Ui::Add_rate *ui;
     QSqlTableModel *model;
     Credit *credit;
+    QSqlDatabase db;
 
     void draw_table();
     void calculation();

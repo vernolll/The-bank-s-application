@@ -61,7 +61,7 @@ void Add_rate::culc_fixed()
     double rate = ui->lineEdit_rate->text().toDouble();
     QString percent = ui->comboBox_persents_2->currentText();
 
-    if(percent != NULL && rate != NULL)
+    if(!percent.isEmpty() && rate != 0.0)
     {
         QSqlQuery query;
         query.exec("CREATE TABLE IF NOT EXISTS rates (type TEXT, date DATE, rate REAL, percent TEXT)");
@@ -115,9 +115,8 @@ void Add_rate::add_changed()
         return;
     }
 
-    if(!date.isNull() && rate != NULL && percent != NULL)
+    if(!date.isNull() && rate != 0.0 && !percent.isEmpty())
     {
-
         query.exec("CREATE TABLE IF NOT EXISTS rates (type TEXT, date DATE, rate REAL, percent TEXT)");
         query.prepare("INSERT INTO rates (type, date, rate, percent) VALUES (:type, :date, :rate, :percent)");
         query.bindValue(":type", "Изменяемая");
@@ -134,11 +133,17 @@ void Add_rate::add_changed()
     draw_table();
 }
 
-
 void Add_rate::culc_changed()
 {
-    this->close();
-    calculation();
+    if(ui->tableView->model()->rowCount() > 0)
+    {
+        this->close();
+        calculation();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Ошибка", "Заполните все поля правильно.");
+    }
 }
 
 
@@ -225,7 +230,6 @@ void Add_rate::calculation()
 
             for(int month = 0; month <= time - 1; month++)
             {
-
                 after = before * (rate + 1);
                 QSqlQuery insertQuery;
                 insertQuery.prepare("INSERT INTO payment_details (date, before, after, payment, after_pay) VALUES (?, ?, ?, ?, ?)");
