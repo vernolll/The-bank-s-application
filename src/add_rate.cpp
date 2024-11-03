@@ -3,8 +3,7 @@
 
 Add_rate::Add_rate(QWidget *parent, Credit *credit) :
     QDialog(parent),
-    ui(new Ui::Add_rate),
-    credit(credit)
+    ui(new Ui::Add_rate)
 {
     ui->setupUi(this);
     setWindowTitle("Мои финансы");
@@ -20,7 +19,6 @@ Add_rate::~Add_rate()
 {
     delete ui;
     delete model;
-    delete credit;
 }
 
 
@@ -396,6 +394,6 @@ void Add_rate::calculation()
             }
         }
     }
-    credit->to_report();
+    //credit->to_report();
 }
 

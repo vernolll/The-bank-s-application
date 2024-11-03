@@ -43,10 +43,16 @@ void income_and_expenses::open_add_action()
 }
 
 
+#include <QtCharts/QChartView>
+#include <QtCharts/QChart>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QCategoryAxis>
+
+
 void income_and_expenses::draw_graph(QVector<QPair<QDate, double>> wallet)
 {
     QMap<QDate, double> dateMoneyMap;
-
     for (const auto &entry : wallet)
     {
         dateMoneyMap[entry.first] = entry.second;
@@ -54,39 +60,60 @@ void income_and_expenses::draw_graph(QVector<QPair<QDate, double>> wallet)
 
     QVector<QDate> uniqueDates = dateMoneyMap.keys().toVector();
     QVector<double> uniqueMoney;
-
     for (const QDate &d : uniqueDates)
     {
         uniqueMoney.append(dateMoneyMap[d]);
     }
 
-    ui->Chart->clearGraphs();
-    ui->Chart->addGraph();
-    QVector<double> dateIndices;
-
+    QLineSeries *series = new QLineSeries();
     for (int i = 0; i < uniqueDates.size(); ++i)
     {
-        dateIndices.append(i);
+        series->append(i, uniqueMoney[i]);
     }
 
-    ui->Chart->graph(0)->setData(dateIndices, uniqueMoney);
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Income and Expenses Over Time");
+    chart->legend()->hide();
 
-    QVector<QString> labels;
-    for (const QDate &d : uniqueDates)
+    QCategoryAxis *axisX = new QCategoryAxis();
+    for (int i = 0; i < uniqueDates.size(); ++i)
     {
-        labels.append(d.toString("dd/MM/yyyy"));
+        axisX->append(uniqueDates[i].toString("dd/MM/yyyy"), i);
+    }
+    axisX->setRange(0, uniqueDates.size() - 1);
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis();
+    double minY = *std::min_element(uniqueMoney.begin(), uniqueMoney.end());
+    double maxY = *std::max_element(uniqueMoney.begin(), uniqueMoney.end());
+    axisY->setRange(minY, maxY);
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    QLayout *layout = ui->Chart->layout();
+    if (layout)
+    {
+        QLayoutItem *item;
+        while ((item = layout->takeAt(0)))
+        {
+            delete item->widget();
+            delete item;
+        }
+    } else {
+        layout = new QVBoxLayout(ui->Chart);
+        ui->Chart->setLayout(layout);
     }
 
-    ui->Chart->xAxis->setAutoTicks(false);
-    ui->Chart->xAxis->setAutoTickLabels(false);
-    ui->Chart->xAxis->setTickVector(dateIndices);
-    ui->Chart->xAxis->setTickVectorLabels(labels);
+    layout->addWidget(chartView);
 
-    ui->Chart->xAxis->setRange(0, dateIndices.size()-1);
-    ui->Chart->yAxis->setRange(*std::min_element(uniqueMoney.begin(), uniqueMoney.end()), *std::max_element(uniqueMoney.begin(), uniqueMoney.end()));
-
-    ui->Chart->replot();
+    chartView->setMinimumSize(400, 300);
 }
+
 
 
 void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector<double> money_inc, QVector<QString> categories_exp, QVector<double> money_exp)
@@ -103,7 +130,6 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
         delete existingLayout_inc;
     }
 
-    // Clear existing layout in diagram_expenses if required
     QLayout* existingLayout_exp = ui->diagram_expenses->layout();
     if (existingLayout_exp)
     {
@@ -116,7 +142,6 @@ void income_and_expenses::draw_diagrams(QVector<QString> categories_inc, QVector
         delete existingLayout_exp;
     }
 
-    // Create and display the income chart
     QPieSeries *series_inc = new QPieSeries(ui->diagram_incomes); // Set parent
     QHash<QString, double> incomeData;
 

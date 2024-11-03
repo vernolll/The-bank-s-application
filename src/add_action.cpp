@@ -10,7 +10,7 @@ add_action::add_action(QWidget *parent) :
     setWindowTitle("Мои финансы");
 
     connect(this, SIGNAL(on_pushButton_add_clicked()), this, SLOT(add_info()));
-    connect(this, SIGNAL(on_comboBox_action_currentIndexChanged(const QString &)), this, SLOT(filling_comboBox(const QString &)));
+    connect(ui->comboBox_action, &QComboBox::currentIndexChanged, this, &add_action::filling_comboBox);
 }
 
 
@@ -73,15 +73,27 @@ bool add_action::connect_info()
 }
 
 
-void add_action::filling_comboBox(const QString &arg1)
+void add_action::filling_comboBox(int index)
 {
-    QSqlQuery query(db);
+    if (!db.isOpen())
+    {
+        qDebug() << "Database is not open.";
+        return;
+    }
 
+    QSqlQuery query(db);
     ui->comboBox_category->clear();
 
-    query.prepare("SELECT Action, Category FROM Categories WHERE action = :act");
-    query.bindValue(":act", arg1);
-    query.exec();
+    QString action = ui->comboBox_action->itemText(index);
+
+    query.prepare("SELECT Action, Category FROM Categories WHERE Action = :act");
+    query.bindValue(":act", action);
+
+    if (!query.exec())
+    {
+        qDebug() << "Query execution failed:" << query.lastError().text();
+        return;
+    }
 
     while (query.next())
     {

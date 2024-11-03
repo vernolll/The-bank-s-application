@@ -26,7 +26,7 @@ void Del_action::draw_table()
 {
     model = new QSqlTableModel();
     model->setTable("actions");
-    model->setFilter("username = '" + user +"'");
+    //model->setFilter("username = '" + user +"'");
 
     model->setHeaderData(0, Qt::Horizontal, "Дейтсвие");
     model->setHeaderData(1, Qt::Horizontal, "Категория");

@@ -7,10 +7,14 @@
 #include <QtCharts>
 #include <QChartView>
 #include <algorithm>
+#include <QtCharts/QChart>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QCategoryAxis>
+
 #include "ui_mainwindow.h"
-#include "include/mainwindow.h"
 #include "include/add_action.h"
-#include "include/qcustomplot.h"
 #include "include/del_action.h"
 #include "include/autorization.h"
 

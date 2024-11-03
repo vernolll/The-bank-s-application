@@ -4,19 +4,15 @@
 Currencies::Currencies(Ui::MainWindow *ui, QObject *parent) :
     QObject(parent),
     ui(ui),
-    curl(nullptr),
     model(nullptr)
 {
+    networkManager = new QNetworkAccessManager(this);
     searchModel = new QSqlQueryModel();
 }
 
 
 Currencies::~Currencies()
 {
-    if (curl)
-    {
-        curl_easy_cleanup(curl);
-    }
     if (model)
     {
         delete model;
@@ -37,19 +33,15 @@ void Currencies::open()
 
 void Currencies::open_currencies()
 {
-    curl = curl_easy_init();
-    if (curl)
-    {
-        curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/ssl/certs/ca-certificates.crt");
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+    QUrl url("https://cbr.ru/currency_base/daily/");
+    QNetworkRequest request(url);
 
-        fetchData();
-    }
-    else
-    {
-        qDebug() << "Failed to initialize curl";
-    }
+    // Настройка SSL, если это необходимо
+    QSslConfiguration sslConfig = request.sslConfiguration();
+    sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);  // Отключает проверку SSL-сертификата
+    request.setSslConfiguration(sslConfig);
+
+    networkManager->get(request);  // Отправляем GET-запрос
 }
 
 
@@ -67,32 +59,21 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 }
 
 
-void Currencies::fetchData()
+void Currencies::fetchData(QNetworkReply *reply)
 {
-    if (curl)
+    if (reply->error() != QNetworkReply::NoError)
     {
-        QByteArray response;
-
-        curl_easy_setopt(curl, CURLOPT_URL, "https://cbr.ru/currency_base/daily/");
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-
-        CURLcode res = curl_easy_perform(curl);
-        if (res != CURLE_OK)
-        {
-            qDebug() << "Error fetching data:" << curl_easy_strerror(res);
-        }
-        else
-        {
-            QString responseString = QString::fromUtf8(response);
-            parseData(responseString);
-        }
+        qDebug() << "Error fetching data:" << reply->errorString();
     }
     else
     {
-        qDebug() << "Curl is not initialized";
+        // Чтение и обработка данных
+        QByteArray response = reply->readAll();
+        QString responseString = QString::fromUtf8(response);
+        parseData(responseString);  // Передача данных для парсинга
     }
+
+    reply->deleteLater();
 }
 
 

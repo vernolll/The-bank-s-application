@@ -8,10 +8,10 @@
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <QSqlError>
-#include <openssl/sha.h>
 #include <sstream>
 #include <iomanip>
 #include "ui_mainwindow.h"
+#include <QCryptographicHash>
 
 
 extern QString user;

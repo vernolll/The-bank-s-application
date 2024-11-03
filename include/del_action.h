@@ -4,11 +4,6 @@
 #include <QDialog>
 #include <QTableView>
 #include <QSqlTableModel>
-#include "include/mainwindow.h"
-#include "include/autorization.h"
-
-
-class MainWindow;
 
 namespace Ui
 {

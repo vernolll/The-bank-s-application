@@ -4,11 +4,17 @@
 
 #include <QObject>
 #include <QWidget>
-#include "ui_mainwindow.h"
-#include <curl/curl.h>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+#include <QRegularExpression>
 #include <QSqlTableModel>
+#include <QStandardItemModel>
+#include <QDesktopServices>
+
+#include "ui_mainwindow.h"
 
 
 namespace Ui
@@ -34,7 +40,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QStandardItemModel *model;
-    CURL *curl;
+    QNetworkAccessManager *networkManager;
 
     void draw_table();
 

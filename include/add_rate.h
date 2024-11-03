@@ -9,7 +9,8 @@
 #include <cmath>
 #include <QSqlTableModel>
 #include <QSqlDatabase>
-#include "include/credit.h"
+#include <QSqlError>
+
 
 class Credit;
 
@@ -41,7 +42,6 @@ private slots:
 private:
     Ui::Add_rate *ui;
     QSqlTableModel *model;
-    Credit *credit;
     QSqlDatabase db;
 
     void draw_table();

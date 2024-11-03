@@ -13,22 +13,6 @@
 class Add_rate;
 
 
-class CustomDelegate : public QStyledItemDelegate
-{
-public:
-    CustomDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
-
-    QString displayText(const QVariant &value, const QLocale &locale) const override
-    {
-        if (value.type() == QVariant::Int || value.type() == QVariant::Double)
-        {
-            return locale.toString(value.toDouble(), 'f', 2);
-        }
-        return QStyledItemDelegate::displayText(value, locale);
-    }
-};
-
-
 namespace Ui
 {
 class MainWindow;

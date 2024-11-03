@@ -1,27 +1,10 @@
-QT       += core gui sql charts
+QT       += core gui sql charts network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
-# The following define makes your compiler emit warnings if you use
-# any Qt feature that has been marked deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-
-# You can also make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-LIBS += -LC:\curl-8.9.1_1-win64-mingw\bin -lcurl
-LIBS += -LC:\curl-8.9.1_1-win64-mingw\lib -lcurl
-LIBS += -lcrypto
-LIBS += -lws2_32
-
-INCLUDEPATH += C:\curl-8.9.1_1-win64-mingw\include
-
 
 SOURCES += \
     src/add_action.cpp \
@@ -34,8 +17,7 @@ SOURCES += \
     src/income_and_expenses.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/news.cpp \
-    src/qcustomplot.cpp
+    src/news.cpp
 
 HEADERS += \
     include/add_action.h \
@@ -45,12 +27,9 @@ HEADERS += \
     include/credit.h \
     include/currencies.h \
     include/del_action.h \
-    include/add_action.h \
-    include/del_action.h \
     include/income_and_expenses.h \
     include/mainwindow.h \
-    include/news.h \
-    include/qcustomplot.h
+    include/news.h
 
 FORMS += \
     ui/add_action.ui \
@@ -61,7 +40,8 @@ FORMS += \
 TRANSLATIONS += \
     Financial_analysis_ru_RU.ts
 
-# Default rules for deployment.
+INCLUDEPATH += include
+
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target

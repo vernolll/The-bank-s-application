@@ -3,9 +3,9 @@
 
 #include <QObject>
 #include <QWidget>
+
 #include "ui_mainwindow.h"
 #include "include/currencies.h"
-
 
 class Currencies;
 

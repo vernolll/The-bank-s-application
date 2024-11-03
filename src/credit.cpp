@@ -89,49 +89,61 @@ void Credit::to_report()
 
     model->setTable("payment_details");
 
+    // Set headers for the model
     model->setHeaderData(0, Qt::Horizontal, "Дата платежа");
     model->setHeaderData(1, Qt::Horizontal, "До %");
     model->setHeaderData(2, Qt::Horizontal, "После %");
     model->setHeaderData(3, Qt::Horizontal, "Платеж");
     model->setHeaderData(4, Qt::Horizontal, "После платежа");
 
+    // Select data from the model
     model->select();
 
+    // Set model to the table view
     ui->tableView_credit->setModel(model);
-    ui->tableView_credit->setColumnWidth(4, 200);
-    CustomDelegate *delegate = new CustomDelegate();
-    ui->tableView_credit->setItemDelegateForColumn(4, delegate);
-    ui->tableView_credit->setItemDelegateForColumn(3, delegate);
-    ui->tableView_credit->setItemDelegateForColumn(2, delegate);
-    ui->tableView_credit->setItemDelegateForColumn(1, delegate);
+    ui->tableView_credit->setColumnWidth(4, 200);  // Set width for the specific column
 
+    // Show the table view
     ui->tableView_credit->show();
 
+    // Calculate average payment and overpayment
     double average = 0.0, overpay = 0.0, money;
     QVector<double> pay;
     QSqlQuery query;
+
+    // Get payment details
     query.exec("SELECT payment FROM payment_details");
-    while(query.next())
+    while (query.next())
     {
-        pay += query.value(0).toDouble();
+        pay.append(query.value(0).toDouble());
     }
 
-    for(int i = 0; i < pay.size(); i++)
+    // Calculate average payment
+    for (double payment : pay)
     {
-        average += pay[i];
+        average += payment;
     }
 
+    if (!pay.isEmpty())  // Ensure we avoid division by zero
+    {
+        average /= pay.size();
+    }
+
+    // Get total money from the credit table
     query.exec("SELECT money FROM credit");
-    while(query.next())
+    if (query.next())
     {
         money = query.value(0).toDouble();
     }
-    overpay = average - money;
-    average /= pay.size();
 
+    // Calculate overpayment
+    overpay = average - money;
+
+    // Prepare the display text
     QString averageText = QString::number(average, 'f', 2);
     QString overpayText = QString::number(overpay, 'f', 2);
 
+    // Set text to labels
     ui->label_average->setText(averageText);
     ui->label_overpayment->setText(overpayText);
 }
